@@ -29,15 +29,15 @@ readonly class AssignRolesAction
         $this->logger->info('Assigning roles to user', [
             'user_id' => $userId->toString(),
             'role_count' => count($command->roleIds),
-            'assigned_by' => $assignedBy?->toString()
+            'assigned_by' => $assignedBy?->toString(),
         ]);
 
         $roleIds = RoleIdCollection::fromStrings($command->roleIds);
 
         $this->userRepository->assignRoles($userId, $roleIds, $assignedBy);
-        
+
         $this->logger->info('Roles assigned successfully', [
-            'user_id' => $userId->toString()
+            'user_id' => $userId->toString(),
         ]);
     }
 }

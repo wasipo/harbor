@@ -15,5 +15,4 @@ interface UserCategoryRepositoryInterface
      * カテゴリを保存
      */
     public function save(UserCategory $category): UserCategory;
-
 }

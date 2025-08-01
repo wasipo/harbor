@@ -22,8 +22,10 @@ class PermissionFactory extends Factory
     {
         $resources = ['users', 'posts', 'categories', 'roles'];
         $actions = ['read', 'create', 'update', 'delete'];
-        
+
+        /** @var string $resource */
         $resource = $this->faker->randomElement($resources);
+        /** @var string $action */
         $action = $this->faker->randomElement($actions);
         $key = "{$resource}.{$action}";
 
@@ -32,7 +34,7 @@ class PermissionFactory extends Factory
             'key' => $key,
             'resource' => $resource,
             'action' => $action,
-            'display_name' => ucfirst($resource) . ' ' . ucfirst($action),
+            'display_name' => ucfirst($resource).' '.ucfirst($action),
             'description' => $this->faker->sentence(),
         ];
     }

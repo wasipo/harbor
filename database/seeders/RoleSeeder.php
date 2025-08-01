@@ -66,7 +66,7 @@ class RoleSeeder extends Seeder
                     'display_name' => $roleData['display_name'],
                 ]
             );
-            
+
             // 権限を関連付け
             $permissionIds = Permission::whereIn('key', $roleData['permissions'])->pluck('id');
             $role->permissions()->sync($permissionIds);

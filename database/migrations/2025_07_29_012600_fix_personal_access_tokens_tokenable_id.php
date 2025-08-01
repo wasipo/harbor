@@ -23,6 +23,6 @@ return new class extends Migration
     public function down(): void
     {
         // ULIDからBigIntegerへの変換はデータロスが発生するため実装しない
-        throw new \RuntimeException('This migration cannot be rolled back due to data loss concerns.');
+        throw new RuntimeException('This migration cannot be rolled back due to data loss concerns.');
     }
 };

@@ -35,8 +35,11 @@ readonly class UserListOutputDTO
     ): self {
         $userDTOs = UserOutputDTO::fromArray($users);
 
+        /** @var array<int, UserOutputDTO> $indexedUserDTOs */
+        $indexedUserDTOs = array_values($userDTOs);
+
         return new self(
-            users: $userDTOs,
+            users: $indexedUserDTOs,
             meta: [
                 'current_page' => $currentPage,
                 'from' => $from,
@@ -62,10 +65,8 @@ readonly class UserListOutputDTO
      *         email: string,
      *         is_active: bool,
      *         email_verified_at: string|null,
-     *         created_at: string,
-     *         updated_at: string,
-     *         categories: array<int, array{id: int, code: string, name: string, display_name: string, description: string|null}>,
-     *         roles: array<int, array{id: int, name: string, display_name: string, description: string|null, permissions: array<int, string>}>
+     *         categoryIds: array<string>,
+     *         roleIds: array<string>
      *     }>,
      *     meta: array{current_page: int, from: int|null, last_page: int, per_page: int, to: int|null, total: int},
      *     links: array{first: string|null, last: string|null, prev: string|null, next: string|null}
@@ -74,7 +75,7 @@ readonly class UserListOutputDTO
     public function toArray(): array
     {
         return [
-            'data' => array_map(fn ($user) => $user->toArray(), $this->users),
+            'data' => array_map(fn (UserOutputDTO $user) => $user->toArray(), $this->users),
             'meta' => $this->meta,
             'links' => $this->links,
         ];

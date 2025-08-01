@@ -42,8 +42,10 @@ erDiagram
 
     permissions {
         varchar id PK "ULID primary key"
-        varchar key UK "user.read, sales.manage等"
-        varchar name "表示名"
+        varchar key UK "users.view_all, roles.create等"
+        varchar resource "リソース名"
+        varchar action "アクション名"
+        varchar display_name "表示名"
         text description
         timestamp created_at
         timestamp updated_at
@@ -81,7 +83,7 @@ erDiagram
         timestamp updated_at
     }
 
-    %% Optional domain profile example
+    %% Optional domain profile example (実装予定)
     employee_profiles {
         varchar user_id PK  "FK to users.id"
         varchar employee_number UK

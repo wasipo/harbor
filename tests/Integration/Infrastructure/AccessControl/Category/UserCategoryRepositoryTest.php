@@ -11,11 +11,11 @@ use App\Infrastructure\AccessControl\Category\UserCategoryRepository;
 use App\Models\Permission;
 use App\Models\UserCategory as EloquentUserCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\UnitTestCase;
 
-class UserCategoryRepositoryTest extends TestCase
+class UserCategoryRepositoryTest extends UnitTestCase
 {
     use RefreshDatabase;
 
@@ -24,7 +24,7 @@ class UserCategoryRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->repository = new UserCategoryRepository();
+        $this->repository = new UserCategoryRepository;
     }
 
     #[Test]
@@ -97,7 +97,7 @@ class UserCategoryRepositoryTest extends TestCase
     }
 
     #[Test]
-    public function 正常系_IDでカテゴリ取得(): void
+    public function 正常系_i_dでカテゴリ取得(): void
     {
         // Arrange
         $eloquentCategory = EloquentUserCategory::create([
@@ -121,7 +121,7 @@ class UserCategoryRepositoryTest extends TestCase
     }
 
     #[Test]
-    public function 正常系_存在しないIDでnull返却(): void
+    public function 正常系_存在しない_i_dでnull返却(): void
     {
         // Act
         $found = $this->repository->findById(UserCategoryId::create());

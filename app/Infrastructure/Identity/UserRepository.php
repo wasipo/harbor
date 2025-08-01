@@ -16,13 +16,14 @@ use App\Models\UserCategoryAssignment;
 use App\Models\UserRole;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use RuntimeException;
 
 final readonly class UserRepository implements UserRepositoryInterface
 {
     public function __construct(
         private PasswordHasher $passwordHasher
     ) {}
-    
+
     public function findById(UserId $id): ?User
     {
         $eloquentUser = EloquentUser::with(['activeCategories', 'roles'])
@@ -41,6 +42,9 @@ final readonly class UserRepository implements UserRepositoryInterface
         return $eloquentUser ? UserFactory::fromEloquent($eloquentUser) : null;
     }
 
+    /**
+     * @return LengthAwarePaginator<int, User>
+     */
     public function findActiveUsers(int $perPage = 15, ?string $search = null, ?string $category = null): LengthAwarePaginator
     {
         $query = EloquentUser::with(['activeCategories', 'roles']);
@@ -62,11 +66,20 @@ final readonly class UserRepository implements UserRepositoryInterface
 
         // Transform the paginator to contain domain models instead of Eloquent models
         $paginator = $query->paginate($perPage);
-        $paginator->getCollection()->transform(function ($eloquentUser) {
+
+        // Transform collection items from EloquentUser to User
+        $transformed = $paginator->getCollection()->map(function (EloquentUser $eloquentUser): User {
             return UserFactory::fromEloquent($eloquentUser);
         });
 
-        return $paginator;
+        // Create a new paginator with the transformed collection
+        return new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed,
+            $paginator->total(),
+            $paginator->perPage(),
+            $paginator->currentPage(),
+            ['path' => $paginator->path()]
+        );
     }
 
     public function add(User $user, string $plainPassword): User
@@ -80,7 +93,12 @@ final readonly class UserRepository implements UserRepositoryInterface
             'email_verified_at' => $user->emailVerifiedAt,
         ]);
 
-        return UserFactory::fromEloquent($eloquentUser->fresh(['activeCategories', 'roles']));
+        $refreshed = $eloquentUser->fresh(['activeCategories', 'roles']);
+        if (!$refreshed instanceof EloquentUser) {
+            throw new RuntimeException('Failed to refresh user');
+        }
+
+        return UserFactory::fromEloquent($refreshed);
     }
 
     public function update(User $user, ?string $plainPassword = null): User
@@ -102,7 +120,12 @@ final readonly class UserRepository implements UserRepositoryInterface
 
         $eloquentUser->save();
 
-        return UserFactory::fromEloquent($eloquentUser->fresh(['activeCategories', 'roles']));
+        $refreshed = $eloquentUser->fresh(['activeCategories', 'roles']);
+        if (!$refreshed instanceof EloquentUser) {
+            throw new RuntimeException('Failed to refresh user');
+        }
+
+        return UserFactory::fromEloquent($refreshed);
     }
 
     public function delete(User $user): bool
@@ -113,7 +136,7 @@ final readonly class UserRepository implements UserRepositoryInterface
             return false; // User not found
         }
 
-        return $eloquentUser->delete();
+        return (bool) $eloquentUser->delete();
     }
 
     public function existsByEmail(Email $email): bool
@@ -184,5 +207,4 @@ final readonly class UserRepository implements UserRepositoryInterface
         // fillAndInsertを使用してバルクインサート（Laravel 12.6+）
         UserRole::fillAndInsert($assignments);
     }
-
 }

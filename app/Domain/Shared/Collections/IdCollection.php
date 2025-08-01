@@ -12,9 +12,9 @@ use Stringable;
 
 /**
  * Base class for ID collections
- * 
+ *
  * @template TId of Stringable
- * 
+ *
  * Note: hasId() accepts 'mixed' instead of 'TId' because PHP lacks native generics.
  * While @param TId ensures static analysis tools understand the expected type,
  * the runtime cannot enforce this constraint. Using 'mixed' is more honest about
@@ -24,20 +24,20 @@ abstract class IdCollection implements Countable
 {
     /** @var Collection<int,TId> */
     private Collection $ids;
-    
+
     // ===========================================
     // Constructor
     // ===========================================
-    
+
     /** @param list<TId> $items */
     final public function __construct(array $items = [])
     {
         $behavior = $this->behavior();
-        
+
         if ($behavior !== CollectionBehavior::ALLOW_DUPLICATES) {
             $items = $this->deduplicate($items, $behavior);
         }
-        
+
         $this->ids = new Collection($items);
         $this->assertInvariants();
     }
@@ -45,17 +45,17 @@ abstract class IdCollection implements Countable
     // ===========================================
     // Static Factory Methods
     // ===========================================
-    
+
     /** 空コレクション */
     public static function empty(): static
     {
         return new static;
     }
 
-    /** 
+    /**
      * 可変長ファクトリ
-     * @param TId ...$ids
-     * @return static
+     *
+     * @param  TId  ...$ids
      */
     public static function of(Stringable ...$ids): static
     {
@@ -63,29 +63,31 @@ abstract class IdCollection implements Countable
         return new static($ids);
     }
 
-    /** 
+    /**
      * 文字列配列からファクトリ
-     * @param array<int, string> $strings
-     * @return static
+     *
+     * @param  array<int, string>  $strings
      */
     public static function fromStrings(array $strings): static
     {
         $stringToId = static::idFactory();
         /** @var list<TId> $ids */
         $ids = array_map($stringToId, $strings);
+
         return new static($ids);
     }
 
     // ===========================================
     // Abstract Methods
     // ===========================================
-    
+
     /**
      * ID生成ファクトリを返す
+     *
      * @return Closure(string): TId
      */
     abstract protected static function idFactory(): Closure;
-    
+
     /**
      * このコレクションの重複制御仕様
      * 具象で必ず指定させる
@@ -95,11 +97,11 @@ abstract class IdCollection implements Countable
     // ===========================================
     // Protected Utility Methods
     // ===========================================
-    
+
     /**
      * 重複を除去またはエラー処理
-     * @param list<TId> $items
-     * @param CollectionBehavior $behavior
+     *
+     * @param  list<TId>  $items
      * @return list<TId>
      */
     protected function deduplicate(array $items, CollectionBehavior $behavior): array
@@ -120,20 +122,20 @@ abstract class IdCollection implements Countable
         /** @var list<TId> */
         return array_values($uniq->all());
     }
-    
-    /** 
+
+    /**
      * 追加的ビジネスルールを子で上書き
-     * @return void
      */
     protected function assertInvariants(): void {}
 
     // ===========================================
     // Public Helper Methods
     // ===========================================
-    
+
     /**
      * 指定されたIDを含むかチェック
-     * @param TId $id
+     *
+     * @param  TId  $id
      */
     public function hasId(mixed $id): bool
     {
@@ -155,7 +157,7 @@ abstract class IdCollection implements Countable
     {
         return !$this->isEmpty();
     }
-    
+
     /**
      * IDの数を返す
      */
@@ -163,9 +165,10 @@ abstract class IdCollection implements Countable
     {
         return $this->ids->count();
     }
-    
+
     /**
      * 全要素を返す
+     *
      * @return list<TId>
      */
     public function all(): array
@@ -173,9 +176,10 @@ abstract class IdCollection implements Countable
         /** @var list<TId> */
         return $this->ids->values()->all();
     }
-    
+
     /**
      * IDの文字列配列を返す
+     *
      * @return list<string>
      */
     public function toStringArray(): array
@@ -183,19 +187,21 @@ abstract class IdCollection implements Countable
         /** @var list<string> */
         return $this->ids->map(fn ($id) => (string) $id)->values()->all();
     }
-    
+
     /**
      * 指定されたIDを含むかチェック（Laravel Collection互換）
-     * @param TId $id
+     *
+     * @param  TId  $id
      */
     public function contains(mixed $id): bool
     {
         return $this->hasId($id);
     }
-    
+
     /**
      * 各要素に対して処理を実行
-     * @param callable(TId): void $callback
+     *
+     * @param  callable(TId): void  $callback
      */
     public function each(callable $callback): void
     {

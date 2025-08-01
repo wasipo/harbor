@@ -34,11 +34,13 @@ class UserFactory
 
     /**
      * Create a User instance from an array of data.
+     *
      * @param array{
      *     id: string,
      *     name: string,
      *     email: string,
      *     is_active: bool,
+     *     email_verified_at?: string|null,
      *     category_ids?: array<int, string>,
      *     role_ids?: array<int, string>
      * } $data
@@ -52,14 +54,14 @@ class UserFactory
             name: new Name($data['name']),
             email: new Email($data['email']),
             status: $status,
-            emailVerifiedAt: isset($data['email_verified_at']) ? CarbonImmutable::parse($data['email_verified_at']) : null,
+            emailVerifiedAt: !empty($data['email_verified_at']) ? CarbonImmutable::parse($data['email_verified_at']) : null,
             categoryIds: CategoryIdCollection::fromStrings($data['category_ids'] ?? []),
             roleIds: RoleIdCollection::fromStrings($data['role_ids'] ?? [])
         );
     }
 
     /**
-     * @return array<int, string>
+     * @return list<string>
      */
     private static function extractCategoryIds(EloquentUser $eloquentUser): array
     {
@@ -67,11 +69,14 @@ class UserFactory
             return [];
         }
 
-        return $eloquentUser->activeCategories->pluck('id')->all();
+        /** @var list<string> $ids */
+        $ids = $eloquentUser->activeCategories->pluck('id')->values()->all();
+
+        return $ids;
     }
 
     /**
-     * @return array<int, string>
+     * @return list<string>
      */
     private static function extractRoleIds(EloquentUser $eloquentUser): array
     {
@@ -79,6 +84,9 @@ class UserFactory
             return [];
         }
 
-        return $eloquentUser->roles->pluck('id')->all();
+        /** @var list<string> */
+        $ids = $eloquentUser->roles->pluck('id')->values()->all();
+
+        return $ids;
     }
 }

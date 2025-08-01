@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -35,16 +36,26 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return [
-            ...parent::share($request),
+        /** @var array<string, mixed> $parentShared */
+        $parentShared = parent::share($request);
+
+        return array_merge($parentShared, [
             'auth' => [
                 'user' => $request->user(),
             ],
             'errors' => function () use ($request) {
-                return $request->session()->get('errors')
-                    ? $request->session()->get('errors')->getBag('default')->getMessages()
-                    : (object) [];
+                $errors = $request->session()->get('errors');
+                if ($errors instanceof \Illuminate\Support\ViewErrorBag) {
+                    return $errors->getBag('default')->getMessages();
+                }
+
+                return (object) [];
             },
-        ];
+        ]);
+    }
+
+    public function handle(Request $request, \Closure $next)
+    {
+        return parent::handle($request, $next);
     }
 }

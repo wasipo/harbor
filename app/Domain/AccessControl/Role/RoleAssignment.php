@@ -60,7 +60,7 @@ readonly class RoleAssignment
      */
     public function daysSinceAssignment(): int
     {
-        return $this->assignedAt->diffInDays(CarbonImmutable::now());
+        return (int) $this->assignedAt->diffInDays(CarbonImmutable::now());
     }
 
     /**

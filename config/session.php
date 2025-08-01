@@ -126,6 +126,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
+        // @phpstan-ignore-next-line env()はbool|stringを返すが、Laravelの標準的な使い方
         Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
     ),
 

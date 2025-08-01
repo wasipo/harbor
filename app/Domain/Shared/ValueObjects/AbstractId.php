@@ -8,13 +8,13 @@ use Stringable;
 
 /**
  * Base abstract class for all ID value objects
- * 
+ *
  * Supports both ULID (string) and Int based identifiers
  */
 abstract readonly class AbstractId implements Stringable
 {
     /**
-     * @param string|int $value The identifier value
+     * @param  string|int  $value  The identifier value
      */
     public function __construct(
         protected string|int $value
@@ -22,8 +22,6 @@ abstract readonly class AbstractId implements Stringable
 
     /**
      * Get the raw value of the identifier
-     * 
-     * @return string|int
      */
     public function value(): string|int
     {

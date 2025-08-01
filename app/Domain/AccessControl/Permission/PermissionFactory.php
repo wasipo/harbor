@@ -25,6 +25,7 @@ class PermissionFactory
 
     /**
      * Create a Permission instance from an array of data.
+     *
      * @param array{
      *     id: string,
      *     key: string,

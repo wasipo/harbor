@@ -13,7 +13,8 @@ final class PermissionCollection extends AbstractEntityCollection
 {
     /**
      * Permissionの識別子はIDで判定
-     * @param Permission $entity
+     *
+     * @param  Permission  $entity
      */
     protected function getIdentifier($entity): string
     {
@@ -29,6 +30,7 @@ final class PermissionCollection extends AbstractEntityCollection
         foreach ($this->all() as $permission) {
             $ids[] = $permission->id;
         }
+
         return new PermissionIdCollection($ids);
     }
 }

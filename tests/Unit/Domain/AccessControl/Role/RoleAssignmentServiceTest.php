@@ -7,26 +7,23 @@ use App\Domain\AccessControl\Role\Role;
 use App\Domain\AccessControl\Role\RoleAssignmentService;
 use App\Domain\AccessControl\Role\RoleId;
 use App\Domain\Identity\AccountStatus;
-use App\Domain\Identity\User;
-use App\Models\UserRole;
-use App\Models\User as EloquentUser;
 use App\Models\Role as EloquentRole;
+use App\Models\User as EloquentUser;
+use App\Models\UserRole;
 use DomainException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Factories\Domain\Identity\TestUserFactory;
-use Tests\TestCase;
+use Tests\UnitTestCase;
 
-class RoleAssignmentServiceTest extends TestCase
+class RoleAssignmentServiceTest extends UnitTestCase
 {
-    use RefreshDatabase;
-
     private RoleAssignmentService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new RoleAssignmentService();
+        $this->service = new RoleAssignmentService;
     }
 
     #[Test]
@@ -35,27 +32,27 @@ class RoleAssignmentServiceTest extends TestCase
         // Arrange
         $user = TestUserFactory::create();
         $eloquentUser = EloquentUser::factory()->create([
-            'ulid' => $user->id->toString(),
+            'id' => $user->id->toString(),
             'name' => $user->name->value,
             'email' => $user->email->value,
             'is_active' => $user->isActive(),
         ]);
-        
+
         $role = Role::reconstitute(
-            id: RoleId::fromString(str()->ulid()),
-            name: 'admin',
+            id: RoleId::fromString(Str::ulid()->toString()),
+            name: 'role_'.Str::random(8),
             displayName: '管理者',
             permissionIds: PermissionIdCollection::empty()
         );
         $eloquentRole = EloquentRole::create([
-            'ulid' => $role->id->toString(),
+            'id' => $role->id->toString(),
             'name' => $role->name,
             'display_name' => $role->displayName,
         ]);
-        
+
         // Act
         $this->service->assignRole($user, $role);
-        
+
         // Assert
         $this->assertDatabaseHas('user_roles', [
             'user_id' => $eloquentUser->id,
@@ -69,35 +66,35 @@ class RoleAssignmentServiceTest extends TestCase
         // Arrange
         $user = TestUserFactory::create();
         $eloquentUser = EloquentUser::factory()->create([
-            'ulid' => $user->id->toString(),
+            'id' => $user->id->toString(),
             'name' => $user->name->value,
             'email' => $user->email->value,
             'is_active' => $user->isActive(),
         ]);
-        
+
         $assignedBy = TestUserFactory::create();
-        $eloquentAssignedBy = \App\Models\User::factory()->create([
-            'ulid' => $assignedBy->id->toString(),
+        $eloquentAssignedBy = EloquentUser::factory()->create([
+            'id' => $assignedBy->id->toString(),
             'name' => $assignedBy->name->value,
             'email' => $assignedBy->email->value,
             'is_active' => $assignedBy->isActive(),
         ]);
-        
+
         $role = Role::reconstitute(
-            id: RoleId::fromString(str()->ulid()),
-            name: 'admin',
+            id: RoleId::fromString(Str::ulid()->toString()),
+            name: 'role_'.Str::random(8),
             displayName: '管理者',
             permissionIds: PermissionIdCollection::empty()
         );
         $eloquentRole = EloquentRole::create([
-            'ulid' => $role->id->toString(),
+            'id' => $role->id->toString(),
             'name' => $role->name,
             'display_name' => $role->displayName,
         ]);
-        
+
         // Act
         $this->service->assignRole($user, $role, $assignedBy);
-        
+
         // Assert
         $this->assertDatabaseHas('user_roles', [
             'user_id' => $eloquentUser->id,
@@ -112,34 +109,35 @@ class RoleAssignmentServiceTest extends TestCase
         // Arrange
         $user = TestUserFactory::create();
         $eloquentUser = EloquentUser::factory()->create([
-            'ulid' => $user->id->toString(),
+            'id' => $user->id->toString(),
             'name' => $user->name->value,
             'email' => $user->email->value,
             'is_active' => $user->isActive(),
         ]);
-        
+
         $role = Role::reconstitute(
-            id: RoleId::fromString(str()->ulid()),
-            name: 'admin',
+            id: RoleId::fromString(Str::ulid()->toString()),
+            name: 'role_'.Str::random(8),
             displayName: '管理者',
             permissionIds: PermissionIdCollection::empty()
         );
         $eloquentRole = EloquentRole::create([
-            'ulid' => $role->id->toString(),
+            'id' => $role->id->toString(),
             'name' => $role->name,
             'display_name' => $role->displayName,
         ]);
-        
+
         // ロールを事前に割り当て
         UserRole::create([
+            'id' => Str::ulid()->toString(),
             'user_id' => $eloquentUser->id,
             'role_id' => $eloquentRole->id,
             'assigned_at' => now(),
         ]);
-        
+
         // Act
         $this->service->assignRole($user, $role);
-        
+
         // Assert - 重複レコードが作られていない
         $count = UserRole::where('user_id', $eloquentUser->id)
             ->where('role_id', $eloquentRole->id)
@@ -155,28 +153,28 @@ class RoleAssignmentServiceTest extends TestCase
             status: AccountStatus::SUSPENDED
         );
         $eloquentUser = EloquentUser::factory()->create([
-            'ulid' => $user->id->toString(),
+            'id' => $user->id->toString(),
             'name' => $user->name->value,
             'email' => $user->email->value,
             'is_active' => $user->isActive(),
         ]);
-        
+
         $role = Role::reconstitute(
-            id: RoleId::fromString(str()->ulid()),
-            name: 'admin',
+            id: RoleId::fromString(Str::ulid()->toString()),
+            name: 'role_'.Str::random(8),
             displayName: '管理者',
             permissionIds: PermissionIdCollection::empty()
         );
         $eloquentRole = EloquentRole::create([
-            'ulid' => $role->id->toString(),
+            'id' => $role->id->toString(),
             'name' => $role->name,
             'display_name' => $role->displayName,
         ]);
-        
+
         // Act & Assert
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Cannot assign role to inactive user');
-        
+
         $this->service->assignRole($user, $role);
     }
 
@@ -186,34 +184,35 @@ class RoleAssignmentServiceTest extends TestCase
         // Arrange
         $user = TestUserFactory::create();
         $eloquentUser = EloquentUser::factory()->create([
-            'ulid' => $user->id->toString(),
+            'id' => $user->id->toString(),
             'name' => $user->name->value,
             'email' => $user->email->value,
             'is_active' => $user->isActive(),
         ]);
-        
+
         $role = Role::reconstitute(
-            id: RoleId::fromString(str()->ulid()),
-            name: 'admin',
+            id: RoleId::fromString(Str::ulid()->toString()),
+            name: 'role_'.Str::random(8),
             displayName: '管理者',
             permissionIds: PermissionIdCollection::empty()
         );
         $eloquentRole = EloquentRole::create([
-            'ulid' => $role->id->toString(),
+            'id' => $role->id->toString(),
             'name' => $role->name,
             'display_name' => $role->displayName,
         ]);
-        
+
         // ロールを事前に割り当て
         UserRole::create([
+            'id' => Str::ulid()->toString(),
             'user_id' => $eloquentUser->id,
             'role_id' => $eloquentRole->id,
             'assigned_at' => now(),
         ]);
-        
+
         // Act
         $this->service->revokeRole($user, $role);
-        
+
         // Assert
         $this->assertDatabaseMissing('user_roles', [
             'user_id' => $eloquentUser->id,
@@ -227,23 +226,23 @@ class RoleAssignmentServiceTest extends TestCase
         // Arrange
         $user = TestUserFactory::create();
         $eloquentUser = EloquentUser::factory()->create([
-            'ulid' => $user->id->toString(),
+            'id' => $user->id->toString(),
             'name' => $user->name->value,
             'email' => $user->email->value,
             'is_active' => $user->isActive(),
         ]);
-        
+
         $role = Role::reconstitute(
-            id: RoleId::fromString(str()->ulid()),
-            name: 'admin',
+            id: RoleId::fromString(Str::ulid()->toString()),
+            name: 'role_'.Str::random(8),
             displayName: '管理者',
             permissionIds: PermissionIdCollection::empty()
         );
         // Eloquentロールは作成しない
-        
+
         // Act - エラーにならずに実行される
         $this->service->revokeRole($user, $role);
-        
+
         // Assert - DBに変更がない
         $this->assertDatabaseCount('user_roles', 0);
     }
@@ -254,30 +253,31 @@ class RoleAssignmentServiceTest extends TestCase
         // Arrange
         $user = TestUserFactory::create();
         $eloquentUser = EloquentUser::factory()->create([
-            'ulid' => $user->id->toString(),
+            'id' => $user->id->toString(),
             'name' => $user->name->value,
             'email' => $user->email->value,
             'is_active' => $user->isActive(),
         ]);
-        
+
         // 複数のロールを作成して割り当て
         for ($i = 1; $i <= 3; $i++) {
             $role = EloquentRole::create([
-                'ulid' => str()->ulid(),
+                'id' => Str::ulid()->toString(),
                 'name' => "role_{$i}",
                 'display_name' => "ロール{$i}",
             ]);
-            
+
             UserRole::create([
+                'id' => Str::ulid()->toString(),
                 'user_id' => $eloquentUser->id,
                 'role_id' => $role->id,
                 'assigned_at' => now(),
             ]);
         }
-        
+
         // Act
         $this->service->revokeAllRoles($user);
-        
+
         // Assert
         $this->assertDatabaseMissing('user_roles', [
             'user_id' => $eloquentUser->id,
@@ -290,37 +290,37 @@ class RoleAssignmentServiceTest extends TestCase
         // Arrange
         $user = TestUserFactory::create();
         $eloquentUser = EloquentUser::factory()->create([
-            'ulid' => $user->id->toString(),
+            'id' => $user->id->toString(),
             'name' => $user->name->value,
             'email' => $user->email->value,
             'is_active' => $user->isActive(),
         ]);
-        
+
         $roles = [];
         $eloquentRoles = [];
         for ($i = 1; $i <= 10; $i++) {
             $role = Role::reconstitute(
-                id: RoleId::fromString(str()->ulid()),
+                id: RoleId::fromString(Str::ulid()->toString()),
                 name: "role_{$i}",
                 displayName: "ロール{$i}",
                 permissionIds: PermissionIdCollection::empty()
             );
-            
+
             $eloquentRole = EloquentRole::create([
-                'ulid' => $role->id->toString(),
+                'id' => $role->id->toString(),
                 'name' => $role->name,
                 'display_name' => $role->displayName,
-                ]);
-            
+            ]);
+
             $roles[] = $role;
             $eloquentRoles[$role->id->toString()] = $eloquentRole;
         }
-        
+
         // Act
         foreach ($roles as $role) {
             $this->service->assignRole($user, $role);
         }
-        
+
         // Assert
         $this->assertDatabaseCount('user_roles', 10);
         foreach ($roles as $role) {

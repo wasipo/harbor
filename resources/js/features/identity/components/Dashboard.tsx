@@ -131,49 +131,45 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, onNavigate
 
                 {/* Quick Links */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <button
-                            onClick={() => onNavigate?.('/users')}
-                            className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all text-left group"
+                        <div
+                            className="bg-white rounded-lg border border-gray-200 p-4 opacity-50 cursor-not-allowed text-left pointer-events-none"
                         >
                             <div className="flex items-center justify-between mb-3">
                                 <Users className="w-5 h-5 text-gray-400" />
-                                <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors" />
+                                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">未実装</span>
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-900">ユーザー一覧</h3>
-                        </button>
+                            <h3 className="text-sm font-semibold text-gray-500">ユーザー一覧</h3>
+                        </div>
                         
-                        <button
-                            onClick={() => onNavigate?.('/users/create')}
-                            className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all text-left group"
+                        <div
+                            className="bg-white rounded-lg border border-gray-200 p-4 opacity-50 cursor-not-allowed text-left pointer-events-none"
                         >
                             <div className="flex items-center justify-between mb-3">
                                 <UserPlus className="w-5 h-5 text-gray-400" />
-                                <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors" />
+                                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">未実装</span>
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-900">ユーザー作成</h3>
-                        </button>
+                            <h3 className="text-sm font-semibold text-gray-500">ユーザー作成</h3>
+                        </div>
                         
-                        <button
-                            onClick={() => onNavigate?.('/roles/manage')}
-                            className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all text-left group"
+                        <div
+                            className="bg-white rounded-lg border border-gray-200 p-4 opacity-50 cursor-not-allowed text-left pointer-events-none"
                         >
                             <div className="flex items-center justify-between mb-3">
                                 <Shield className="w-5 h-5 text-gray-400" />
-                                <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors" />
+                                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">未実装</span>
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-900">ロール管理</h3>
-                        </button>
+                            <h3 className="text-sm font-semibold text-gray-500">ロール管理</h3>
+                        </div>
                         
-                        <button
-                            onClick={() => onNavigate?.('/categories/manage')}
-                            className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all text-left group"
+                        <div
+                            className="bg-white rounded-lg border border-gray-200 p-4 opacity-50 cursor-not-allowed text-left pointer-events-none"
                         >
                             <div className="flex items-center justify-between mb-3">
                                 <Building2 className="w-5 h-5 text-gray-400" />
-                                <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors" />
+                                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">未実装</span>
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-900">カテゴリ設定</h3>
-                        </button>
+                            <h3 className="text-sm font-semibold text-gray-500">カテゴリ設定</h3>
+                        </div>
                 </div>
 
                 {/* Primary Info Grid */}

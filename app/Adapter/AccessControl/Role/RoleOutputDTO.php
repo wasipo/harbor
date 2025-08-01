@@ -8,12 +8,14 @@ use App\Domain\AccessControl\Role\Role;
 
 readonly class RoleOutputDTO
 {
+    /**
+     * @param  list<string>  $permissionIds
+     */
     public function __construct(
         public string $id,
         public string $name,
-        public string $display_name,
-        /** @var array<string, array<int, string>> */
-        public array $permissions,
+        public string $displayName,
+        public array $permissionIds,
     ) {}
 
     public static function fromModel(Role $role): self
@@ -21,8 +23,8 @@ readonly class RoleOutputDTO
         return new self(
             id: $role->id->toString(),
             name: $role->name,
-            display_name: $role->displayName,
-            permissions: $role->permissions,
+            displayName: $role->displayName,
+            permissionIds: $role->permissionIds->toStringArray(),
         );
     }
 
@@ -40,7 +42,7 @@ readonly class RoleOutputDTO
      *     id: string,
      *     name: string,
      *     display_name: string,
-     *     permissions: array<string, array<int, string>>
+     *     permissions: array<string>
      * }
      */
     public function toArray(): array
@@ -48,8 +50,8 @@ readonly class RoleOutputDTO
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'display_name' => $this->display_name,
-            'permissions' => $this->permissions,
+            'display_name' => $this->displayName,
+            'permissions' => $this->permissionIds,
         ];
     }
 }

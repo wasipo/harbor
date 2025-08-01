@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 /**
  * Base class for integer-based ID value objects
- * 
+ *
  * For legacy systems or simple numeric identifiers
  */
 abstract readonly class AbstractIntId extends AbstractId
@@ -18,7 +18,7 @@ abstract readonly class AbstractIntId extends AbstractId
         if ($value <= 0) {
             throw new InvalidArgumentException('ID must be a positive integer');
         }
-        
+
         parent::__construct($value);
     }
 

@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property-read User $user
  * @property-read UserCategory $category
- * 
- * @method static bool fillAndInsert(array $rows)
  */
 class UserCategoryAssignment extends Model
 {
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $fillable = [
+        'id',
         'user_id',
         'category_id',
         'is_primary',
@@ -57,11 +59,17 @@ class UserCategoryAssignment extends Model
     }
 
     // Relationships
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<UserCategory, $this>
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(UserCategory::class, 'category_id');

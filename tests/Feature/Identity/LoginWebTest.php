@@ -6,10 +6,11 @@ namespace Tests\Feature\Identity;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\FeatureTestCase;
 
-class LoginWebTest extends TestCase
+class LoginWebTest extends FeatureTestCase
 {
     use RefreshDatabase;
 
@@ -21,8 +22,9 @@ class LoginWebTest extends TestCase
 
         // Assert
         $response->assertOk();
-        $response->assertInertia(fn ($page) => $page
-            ->component('Login')
+        $response->assertInertia(
+            fn (AssertableInertia $page) => $page
+                ->component('Login')
         );
     }
 

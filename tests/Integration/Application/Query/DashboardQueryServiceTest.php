@@ -15,9 +15,9 @@ use App\Models\User;
 use App\Models\UserCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
-use Tests\TestCase;
+use Tests\UnitTestCase;
 
-class DashboardQueryServiceTest extends TestCase
+class DashboardQueryServiceTest extends UnitTestCase
 {
     use RefreshDatabase;
 
@@ -26,7 +26,7 @@ class DashboardQueryServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new DashboardQueryService();
+        $this->service = new DashboardQueryService;
     }
 
     public function test_認証されていない場合は例外を投げる(): void
@@ -37,11 +37,11 @@ class DashboardQueryServiceTest extends TestCase
         // Act & Assert
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('User not authenticated');
-        
+
         $this->service->getDashboardData();
     }
 
-    public function test_最小限のユーザー情報でDTOを返す(): void
+    public function test_最小限のユーザー情報で_dt_oを返す(): void
     {
         // Arrange
         $user = User::factory()->create([
@@ -63,7 +63,7 @@ class DashboardQueryServiceTest extends TestCase
         $this->assertEmpty($result->permissions);
     }
 
-    public function test_カテゴリ情報を含むDTOを返す(): void
+    public function test_カテゴリ情報を含む_dt_oを返す(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -75,7 +75,7 @@ class DashboardQueryServiceTest extends TestCase
             'code' => 'full_time',
             'name' => '正社員',
         ]);
-        
+
         $user->activeCategories()->attach($category1, [
             'is_primary' => true,
             'effective_from' => now()->subMonth()->format('Y-m-d'),
@@ -84,7 +84,7 @@ class DashboardQueryServiceTest extends TestCase
             'is_primary' => false,
             'effective_from' => now()->subMonth()->format('Y-m-d'),
         ]);
-        
+
         $this->actingAs($user);
 
         // Act
@@ -92,18 +92,18 @@ class DashboardQueryServiceTest extends TestCase
 
         // Assert
         $this->assertCount(2, $result->categories);
-        
+
         // カテゴリを取得（順番は保証されないので、コードで検索）
         $engineerCategory = collect($result->categories)->firstWhere('code', 'engineer');
         $fullTimeCategory = collect($result->categories)->firstWhere('code', 'full_time');
-        
+
         $this->assertNotNull($engineerCategory);
         $this->assertInstanceOf(CategoryDataDTO::class, $engineerCategory);
         $this->assertEquals($category1->id, $engineerCategory->id);
         $this->assertEquals('engineer', $engineerCategory->code);
         $this->assertEquals('エンジニア', $engineerCategory->name);
         $this->assertTrue($engineerCategory->isPrimary);
-        
+
         $this->assertNotNull($fullTimeCategory);
         $this->assertInstanceOf(CategoryDataDTO::class, $fullTimeCategory);
         $this->assertEquals($category2->id, $fullTimeCategory->id);
@@ -112,7 +112,7 @@ class DashboardQueryServiceTest extends TestCase
         $this->assertFalse($fullTimeCategory->isPrimary);
     }
 
-    public function test_ロール情報を含むDTOを返す(): void
+    public function test_ロール情報を含む_dt_oを返す(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -124,10 +124,10 @@ class DashboardQueryServiceTest extends TestCase
             'name' => 'editor',
             'display_name' => '編集者',
         ]);
-        
+
         $user->roles()->attach($role1);
         $user->roles()->attach($role2);
-        
+
         $this->actingAs($user);
 
         // Act
@@ -135,18 +135,18 @@ class DashboardQueryServiceTest extends TestCase
 
         // Assert
         $this->assertCount(2, $result->roles);
-        
+
         // ロールを取得（順番は保証されないので、keyで検索）
         $adminRole = collect($result->roles)->firstWhere('key', 'admin');
         $editorRole = collect($result->roles)->firstWhere('key', 'editor');
-        
+
         $this->assertNotNull($adminRole);
         $this->assertInstanceOf(RoleDataDTO::class, $adminRole);
         $this->assertEquals($role1->id, $adminRole->id);
         $this->assertEquals('admin', $adminRole->key);
         $this->assertEquals('管理者', $adminRole->name);
         $this->assertNull($adminRole->description);
-        
+
         $this->assertNotNull($editorRole);
         $this->assertInstanceOf(RoleDataDTO::class, $editorRole);
         $this->assertEquals($role2->id, $editorRole->id);
@@ -155,11 +155,11 @@ class DashboardQueryServiceTest extends TestCase
         $this->assertNull($editorRole->description);
     }
 
-    public function test_権限情報を含むDTOを返す(): void
+    public function test_権限情報を含む_dt_oを返す(): void
     {
         // Arrange
         $user = User::factory()->create();
-        
+
         $permission1 = Permission::factory()->create([
             'key' => 'users.read',
             'display_name' => 'ユーザー閲覧',
@@ -176,25 +176,25 @@ class DashboardQueryServiceTest extends TestCase
             'key' => 'sales.view',
             'display_name' => '売上閲覧',
         ]);
-        
+
         // ロール経由の権限
         $role1 = Role::factory()->create(['name' => 'admin']);
         $role1->permissions()->attach([$permission1->id, $permission2->id]);
-        
+
         $role2 = Role::factory()->create(['name' => 'reader']);
         $role2->permissions()->attach([$permission1->id, $permission3->id]);
-        
+
         $user->roles()->attach([$role1->id, $role2->id]);
-        
+
         // カテゴリ経由の権限も追加
         $category = UserCategory::factory()->create(['code' => 'sales']);
         $category->permissions()->attach([$permission1->id, $permission4->id]);
-        
+
         $user->activeCategories()->attach($category, [
             'is_primary' => true,
             'effective_from' => now()->toDateString(),
         ]);
-        
+
         $this->actingAs($user);
 
         // Act
@@ -202,13 +202,13 @@ class DashboardQueryServiceTest extends TestCase
 
         // Assert
         $this->assertCount(4, $result->permissions); // 重複を除いた権限数（users.readは重複）
-        
-        $permissionKeys = array_map(fn($p) => $p->key, $result->permissions);
+
+        $permissionKeys = array_map(fn ($p) => $p->key, $result->permissions);
         $this->assertContains('users.read', $permissionKeys);
         $this->assertContains('users.create', $permissionKeys);
         $this->assertContains('posts.read', $permissionKeys);
         $this->assertContains('sales.view', $permissionKeys); // カテゴリ経由の権限
-        
+
         foreach ($result->permissions as $permission) {
             $this->assertInstanceOf(PermissionDataDTO::class, $permission);
             $this->assertNotEmpty($permission->id);
@@ -224,7 +224,7 @@ class DashboardQueryServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
         ]);
-        
+
         // カテゴリ設定
         $category = UserCategory::factory()->create([
             'code' => 'manager',
@@ -234,7 +234,7 @@ class DashboardQueryServiceTest extends TestCase
             'is_primary' => true,
             'effective_from' => now()->subMonth()->format('Y-m-d'),
         ]);
-        
+
         // ロールと権限設定
         $permission1 = Permission::factory()->create([
             'key' => 'team.manage',
@@ -244,7 +244,7 @@ class DashboardQueryServiceTest extends TestCase
             'key' => 'reports.view',
             'display_name' => 'レポート閲覧',
         ]);
-        
+
         // ロール経由の権限
         $role = Role::factory()->create([
             'name' => 'team_lead',
@@ -252,10 +252,10 @@ class DashboardQueryServiceTest extends TestCase
         ]);
         $role->permissions()->attach($permission1);
         $user->roles()->attach($role);
-        
+
         // カテゴリ経由の権限
         $category->permissions()->attach($permission2);
-        
+
         $this->actingAs($user);
 
         // Act
@@ -266,17 +266,17 @@ class DashboardQueryServiceTest extends TestCase
         $this->assertEquals($user->id, $result->id);
         $this->assertEquals('John Doe', $result->name);
         $this->assertEquals('john@example.com', $result->email);
-        
+
         $this->assertCount(1, $result->categories);
         $this->assertEquals('manager', $result->categories[0]->code);
         $this->assertTrue($result->categories[0]->isPrimary);
-        
+
         $this->assertCount(1, $result->roles);
         $this->assertEquals('team_lead', $result->roles[0]->key);
         $this->assertNull($result->roles[0]->description);
-        
+
         $this->assertCount(2, $result->permissions); // ロール経由とカテゴリ経由の権限
-        $permissionKeys = array_map(fn($p) => $p->key, $result->permissions);
+        $permissionKeys = array_map(fn ($p) => $p->key, $result->permissions);
         $this->assertContains('team.manage', $permissionKeys);
         $this->assertContains('reports.view', $permissionKeys);
     }

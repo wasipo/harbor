@@ -54,6 +54,9 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'Unauthenticated.',
                 ], 401);
             }
+
+            // Webリクエストの場合はログインページへリダイレクト
+            return redirect()->guest(route('login'));
         });
 
         $exceptions->render(function (Illuminate\Auth\Access\AuthorizationException $e, $request) {
@@ -62,6 +65,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'This action is unauthorized.',
                 ], 403);
             }
+
+            return null; // デフォルト処理を利用
         });
 
         $exceptions->render(function (Illuminate\Database\Eloquent\ModelNotFoundException $e, $request) {
@@ -70,6 +75,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'Resource not found.',
                 ], 404);
             }
+
+            return null; // デフォルト処理を利用
         });
 
         $exceptions->render(function (Illuminate\Validation\ValidationException $e, $request) {
@@ -79,6 +86,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     'errors' => $e->errors(),
                 ], 422);
             }
+
+            return null; // デフォルト処理を利用
         });
 
         $exceptions->render(function (Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
@@ -87,6 +96,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => $e->getMessage() ?: 'Server Error',
                 ], $e->getStatusCode());
             }
+
+            return null; // デフォルト処理を利用
         });
 
         $exceptions->render(function (Throwable $e, $request) {
@@ -97,5 +108,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         : $e->getMessage(),
                 ], 500);
             }
+
+            return null; // デフォルト処理を利用
         });
     })->create();

@@ -6,7 +6,7 @@ namespace App\Domain\AccessControl\Permission;
 
 /**
  * Permission Entity
- * 
+ *
  * 権限を表すエンティティ
  */
 readonly class Permission
@@ -30,7 +30,7 @@ readonly class Permission
     ): self {
         // keyからresourceとactionを抽出
         [$resource, $action] = explode('.', $key, 2);
-        
+
         return new self(
             id: PermissionId::create(),
             key: new PermissionKey($key),

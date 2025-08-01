@@ -8,9 +8,9 @@ use App\Domain\AccessControl\Permission\Permission;
 use App\Domain\AccessControl\Permission\PermissionCollection;
 use DomainException;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
-class PermissionCollectionTest extends TestCase
+class PermissionCollectionTest extends UnitTestCase
 {
     #[Test]
     public function 正常系_空コレクション生成(): void
@@ -27,8 +27,8 @@ class PermissionCollectionTest extends TestCase
     public function 正常系_可変長ファクトリでcollection生成(): void
     {
         // Arrange
-        $permission1 = Permission::create('posts.create', 'posts', 'create', '記事作成');
-        $permission2 = Permission::create('posts.edit', 'posts', 'edit', '記事編集');
+        $permission1 = Permission::create('posts.create', 'posts', '記事作成');
+        $permission2 = Permission::create('posts.edit', 'posts', '記事編集');
 
         // Act
         $collection = PermissionCollection::of($permission1, $permission2);
@@ -43,8 +43,8 @@ class PermissionCollectionTest extends TestCase
     public function 異常系_重複権限で例外発生(): void
     {
         // Arrange
-        $permission1 = Permission::create('posts.create', 'posts', 'create', '記事作成');
-        $permission2 = Permission::create('posts.edit', 'posts', 'edit', '記事編集');
+        $permission1 = Permission::create('posts.create', 'posts', '記事作成');
+        $permission2 = Permission::create('posts.edit', 'posts', '記事編集');
 
         // Act & Assert
         $this->expectException(DomainException::class);
@@ -54,11 +54,11 @@ class PermissionCollectionTest extends TestCase
     }
 
     #[Test]
-    public function 正常系_toIdsメソッド(): void
+    public function 正常系_to_idsメソッド(): void
     {
         // Arrange
-        $permission1 = Permission::create('posts.create', 'posts', 'create', '記事作成');
-        $permission2 = Permission::create('posts.edit', 'posts', 'edit', '記事編集');
+        $permission1 = Permission::create('posts.create', 'posts', '記事作成');
+        $permission2 = Permission::create('posts.edit', 'posts', '記事編集');
         $collection = PermissionCollection::of($permission1, $permission2);
 
         // Act

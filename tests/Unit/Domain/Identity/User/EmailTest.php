@@ -5,9 +5,9 @@ namespace Tests\Unit\Domain\Identity\User;
 use App\Domain\Identity\Email;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
-class EmailTest extends TestCase
+class EmailTest extends UnitTestCase
 {
     public function test_正常系_有効なメールアドレス受入(): void
     {
@@ -22,7 +22,8 @@ class EmailTest extends TestCase
         $this->assertEquals($validEmail, $email->value);
     }
 
-    #[DataProvider('invalidEmailProvider')] public function test_異常系_無効なメールアドレス拒否(string $invalidEmail, string $expectedMessage): void
+    #[DataProvider('invalidEmailProvider')]
+    public function test_異常系_無効なメールアドレス拒否(string $invalidEmail, string $expectedMessage): void
     {
         // Arrange & Act & Assert
         $this->expectException(InvalidArgumentException::class);
@@ -57,7 +58,8 @@ class EmailTest extends TestCase
         $this->assertEquals($japaneseEmail, $email->value);
     }
 
-    #[DataProvider('validEmailProvider')] public function test_正常系_様々な有効メールアドレス(string $validEmail): void
+    #[DataProvider('validEmailProvider')]
+    public function test_正常系_様々な有効メールアドレス(string $validEmail): void
     {
         // Arrange & Act
         $email = new Email($validEmail);

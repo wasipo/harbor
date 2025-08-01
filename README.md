@@ -15,7 +15,6 @@
 - **CSS**: Tailwind CSS v4
 - **Architecture**: DDD (Domain-Driven Design) + Clean Architecture
 - **Database**: MySQL 8.4
-- **ID Strategy**: ULID (Universally Unique Lexicographically Sortable Identifier)
 
 ## 📁 プロジェクト構造
 
@@ -70,26 +69,45 @@ resources/js/
 
 ### インストール
 
-#### Docker環境（推奨）
+#### はじめかた
 
 ```bash
 # リポジトリのクローン
 git clone https://github.com/wasipo/harbor harbor
 cd harbor
 
-# Docker環境の構築と起動
-make install
-
 # フロントエンド開発サーバーの起動（別ターミナル）
 npm install
-npm run dev
+make master-fresh
+
+http://localhost:8080 にアクセス
 ```
+
+#### テストアカウント
+
+マスターデータ投入後、以下のアカウントでログイン可能です（パスワードは全て `password`）：
+
+| メールアドレス | 役職 | ロール | 権限概要 |
+|-------------------|---------------------------|--------------|----------------------------------|
+| super@example.com | スーパー管理者 | super_admin | 全権限 |
+| admin@example.com | 山田太郎（管理者） | admin | ユーザー・ロール管理、レポート閲覧 |
+| suzuki@example.com | 鈴木花子（営業マネージャー） | manager | ユーザー閲覧・更新、レポート管理 |
+| sato@example.com | 佐藤次郎（開発リーダー） | leader | ユーザー閲覧、レポート閲覧 |
+| tanaka@example.com | 田中美咲（経理担当） | member | 自分の情報のみ閲覧・更新 |
+| takahashi@example.com | 高橋健（カスタマーサポート） | member | 自分の情報のみ閲覧・更新 |
+| ito@example.com | 伊藤さくら（人事担当） | member | 自分の情報のみ閲覧・更新 |
+| watanabe@example.com | 渡辺大輔（開発メンバー） | member | 自分の情報のみ閲覧・更新 |
+| nakamura@example.com | 中村優子（マーケティング） | member | 自分の情報のみ閲覧・更新 |
+| guest@example.com | ゲストユーザー | guest | 自分の情報のみ閲覧 |
+
 
 以下のコンテナが起動します：
 - **harbor_mysql** - MySQL 8.4 (port: 13306)
 - **harbor_php** - PHP-FPM 8.4 Alpine
 - **harbor_nginx** - Nginx 1.27 Alpine (port: 8080)
 - **harbor_node** - Node.js 20 Alpine
+
+> 上記構成は開発用になるので、本番運用する際は別途構成を考えたほうが良いです。
 
 ### アクセス
 
@@ -163,8 +181,10 @@ erDiagram
 
     permissions {
         varchar id PK "ULID primary key"
-        varchar key UK "user.read, sales.manage等"
-        varchar name "表示名"
+        varchar key UK "users.view_all, roles.create等"
+        varchar resource "リソース名"
+        varchar action "アクション名"
+        varchar display_name "表示名"
         text description
         timestamp created_at
         timestamp updated_at
@@ -202,7 +222,7 @@ erDiagram
         timestamp updated_at
     }
 
-    %% Optional domain profile example
+    %% Optional domain profile example (実装予定)
     employee_profiles {
         varchar user_id PK  "FK to users.id"
         varchar employee_number UK
@@ -270,10 +290,12 @@ make lint         # チェックのみ
 make fix          # 自動修正
 
 # PHPStan (静的解析) 
-make stan         # 現状対応できてないので、優先的に修正予定
+make stan
 
 # PHPテスト
 make test         # Docker環境でテスト実行
+
+make master       # マスター環境でのテスト実行
 
 # ローカル環境の場合
 composer lint     # Pintチェック
@@ -309,7 +331,6 @@ npm run api:gen    # api/openapi.yaml → TypeScript型生成
   * 複雑なドメインの保守性と拡張性を両立。思想と実装を一致させる構成。
 
 ## 🔄 今後の実装予定
-- [ ] PHPStanのレベルMAX対応
 - [ ] ユーザー管理機能（一覧、作成、編集、削除）
 - [ ] 権限チェック機能の実装
 - [ ] APIエンドポイント整備

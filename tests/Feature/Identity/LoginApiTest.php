@@ -8,9 +8,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\FeatureTestCase;
 
-class LoginApiTest extends TestCase
+class LoginApiTest extends FeatureTestCase
 {
     use RefreshDatabase;
 

@@ -9,7 +9,6 @@ use App\Domain\AccessControl\Category\UserCategoryFactory;
 use App\Domain\AccessControl\Category\UserCategoryId;
 use App\Domain\AccessControl\Category\UserCategoryRepositoryInterface;
 use App\Models\UserCategory as EloquentUserCategory;
-use Illuminate\Support\Str;
 
 class UserCategoryRepository implements UserCategoryRepositoryInterface
 {
@@ -18,12 +17,12 @@ class UserCategoryRepository implements UserCategoryRepositoryInterface
      */
     public function findById(UserCategoryId $id): ?UserCategory
     {
-        $eloquentCategory = EloquentUserCategory::with('permissions')->find($id->toString());
-        
+        $eloquentCategory = EloquentUserCategory::query()->with('permissions')->find($id->toString());
+
         if ($eloquentCategory === null) {
             return null;
         }
-        
+
         return UserCategoryFactory::fromEloquent($eloquentCategory);
     }
 
@@ -41,8 +40,7 @@ class UserCategoryRepository implements UserCategoryRepositoryInterface
                 'is_active' => $category->isActive,
             ]
         );
-        
+
         return UserCategoryFactory::fromEloquent($eloquentCategory);
     }
-
 }

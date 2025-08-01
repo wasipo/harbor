@@ -11,8 +11,7 @@ parameters:
 
     level: max
 
-    ignoreErrors:
-        - '#PHPDoc tag @var#'
+    ignoreErrors: []
 
     excludePaths:
         # 生成ファイル

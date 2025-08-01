@@ -14,6 +14,9 @@ interface UserRepositoryInterface
 
     public function findByEmail(Email $email): ?User;
 
+    /**
+     * @return LengthAwarePaginator<int, User>
+     */
     public function findActiveUsers(int $perPage = 15, ?string $search = null, ?string $category = null): LengthAwarePaginator;
 
     public function add(User $user, string $plainPassword): User;
@@ -23,7 +26,6 @@ interface UserRepositoryInterface
     public function delete(User $user): bool;
 
     public function existsByEmail(Email $email): bool;
-
 
     /**
      * Find Eloquent user by email (for authentication purposes)

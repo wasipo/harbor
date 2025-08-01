@@ -23,5 +23,4 @@ interface RoleRepositoryInterface
     public function existsByName(string $name): bool;
 
     public function existsById(RoleId $id): bool;
-
 }

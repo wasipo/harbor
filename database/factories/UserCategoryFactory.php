@@ -20,8 +20,9 @@ class UserCategoryFactory extends Factory
      */
     public function definition(): array
     {
+        /** @var string $code */
         $code = $this->faker->unique()->randomElement(['engineer', 'sales', 'admin', 'hr', 'finance']);
-        
+
         $names = [
             'engineer' => 'エンジニア',
             'sales' => '営業',

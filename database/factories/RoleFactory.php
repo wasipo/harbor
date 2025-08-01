@@ -21,7 +21,7 @@ class RoleFactory extends Factory
     public function definition(): array
     {
         $name = fake()->unique()->lexify('role_????');
-        
+
         return [
             'id' => (string) Str::ulid(),
             'name' => $name,

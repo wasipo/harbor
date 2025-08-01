@@ -21,14 +21,15 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $remember_token
  * @property \Carbon\CarbonImmutable $created_at
  * @property \Carbon\CarbonImmutable $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Role> $roles
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserCategory> $activeCategories
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserCategoryAssignment> $categoryAssignments
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserRole> $userRoles
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Role> $roles
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, UserCategory> $activeCategories
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, UserCategoryAssignment> $categoryAssignments
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, UserRole> $userRoles
  * @property-read int|null $roles_count
  * @property-read int|null $active_categories_count
  * @property-read int|null $category_assignments_count
  * @property-read int|null $user_roles_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|User where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
@@ -37,8 +38,6 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereNull($column)
  * @method static \Illuminate\Database\Eloquent\Builder|User find($id, $columns = ['*'])
  * @method static \Illuminate\Database\Eloquent\Builder|User first($columns = ['*'])
- * @method static \Illuminate\Database\Eloquent\Builder|User create(array $attributes = [])
- * @method static \Illuminate\Database\Eloquent\Builder|User updateOrCreate(array $attributes, array $values = [])
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|User whereNotNull($column)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereIn($column, $values, $boolean = 'and', $not = false)
@@ -49,13 +48,14 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class User extends Authenticatable
 {
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * キータイプをstringに設定（ULID使用）
      */
     protected $keyType = 'string';
-    
+
     /**
      * 自動増分を無効化（ULID使用）
      */
@@ -64,7 +64,7 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'id',
@@ -78,7 +78,7 @@ class User extends Authenticatable
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -115,79 +115,24 @@ class User extends Authenticatable
         return $this->is_active;
     }
 
-    // Authorization methods (delegation to Authorization domain)
+    // Authorization methods
     public function isAdmin(): bool
     {
         return $this->activeCategories->contains('code', 'admin');
     }
 
-    public function hasRole(string $roleName): bool
-    {
-        return $this->roles->contains('name', $roleName);
-    }
-
-    /**
-     * @param array<int, string> $roleNames
-     */
-    public function hasAnyRole(array $roleNames): bool
-    {
-        return $this->roles->whereIn('name', $roleNames)->isNotEmpty();
-    }
-
-    public function hasPermission(string $permission): bool
-    {
-        // Check role-based permissions
-        foreach ($this->roles as $role) {
-            if ($this->roleHasPermission($role, $permission)) {
-                return true;
-            }
-        }
-
-        // Check category-based permissions
-        $categoryPermissions = $this->getCategoryPermissions();
-
-        return in_array($permission, $categoryPermissions);
-    }
-
-    public function hasCategory(string $categoryCode): bool
-    {
-        return $this->activeCategories->contains('code', $categoryCode);
-    }
-
-    public function getPrimaryCategory()
-    {
-        return $this->activeCategories->where('pivot.is_primary', true)->first()
-            ?? $this->activeCategories->first();
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    public function getCategoryPermissions(): array
-    {
-        $permissions = [];
-        
-        // カテゴリに紐づく権限を取得
-        foreach ($this->activeCategories as $category) {
-            foreach ($category->permissions as $permission) {
-                $permissions[] = $permission->key;
-            }
-        }
-
-        return array_unique($permissions);
-    }
-
-    private function roleHasPermission($role, string $permission): bool
-    {
-        return $role->permissions->contains('key', $permission);
-    }
-
     // Relationships to other domains
+    /**
+     * @return HasMany<UserCategoryAssignment, $this>
+     */
     public function categoryAssignments(): HasMany
     {
         return $this->hasMany(UserCategoryAssignment::class);
     }
 
+    /**
+     * @return BelongsToMany<UserCategory, $this>
+     */
     public function activeCategories(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -203,11 +148,17 @@ class User extends Authenticatable
             });
     }
 
+    /**
+     * @return HasMany<UserRole, $this>
+     */
     public function userRoles(): HasMany
     {
         return $this->hasMany(UserRole::class);
     }
 
+    /**
+     * @return BelongsToMany<Role, $this>
+     */
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -216,6 +167,6 @@ class User extends Authenticatable
             'user_id',
             'role_id'
         )->withPivot(['assigned_at', 'assigned_by'])
-          ->withTimestamps();
+            ->withTimestamps();
     }
 }

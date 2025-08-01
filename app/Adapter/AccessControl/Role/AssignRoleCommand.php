@@ -5,8 +5,8 @@ namespace App\Adapter\AccessControl\Role;
 readonly class AssignRoleCommand
 {
     public function __construct(
-        public int $userId,
+        public string $userId,  // ULID
         public string $roleId,  // ULID
-        public ?int $assignedByUserId = null
+        public ?string $assignedByUserId = null  // ULID
     ) {}
 }

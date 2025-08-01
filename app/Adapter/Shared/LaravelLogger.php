@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 final class LaravelLogger implements LoggerInterface
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function info(string $message, array $context = []): void
     {
@@ -18,7 +18,7 @@ final class LaravelLogger implements LoggerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function warning(string $message, array $context = []): void
     {
@@ -26,7 +26,7 @@ final class LaravelLogger implements LoggerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function error(string $message, array $context = []): void
     {
@@ -34,7 +34,7 @@ final class LaravelLogger implements LoggerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function debug(string $message, array $context = []): void
     {

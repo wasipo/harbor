@@ -6,9 +6,9 @@ namespace Tests\Unit\Domain\AccessControl\Permission;
 
 use App\Domain\AccessControl\Permission\PermissionName;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
-class PermissionNameTest extends TestCase
+class PermissionNameTest extends UnitTestCase
 {
     public function test_正常系_有効な名前で作成(): void
     {
@@ -34,7 +34,7 @@ class PermissionNameTest extends TestCase
     {
         // Arrange
         $longName = str_repeat('あ', 100);
-        
+
         // Act
         $name = new PermissionName($longName);
 
@@ -55,7 +55,7 @@ class PermissionNameTest extends TestCase
     {
         // Arrange
         $tooLongName = str_repeat('あ', 101);
-        
+
         // Act & Assert
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Permission name cannot exceed 100 characters');

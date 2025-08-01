@@ -5,11 +5,12 @@ namespace Database\Seeders;
 use App\Models\Permission;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class PermissionSeeder extends Seeder
 {
     use WithoutModelEvents;
-    
+
     /**
      * Run the database seeds.
      */
@@ -38,7 +39,7 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'ユーザー削除',
                 'description' => 'ユーザーの削除権限',
             ],
-            
+
             // Profile permissions
             [
                 'key' => 'profile.read',
@@ -54,7 +55,7 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'プロフィール編集',
                 'description' => '自分のプロフィールの編集権限',
             ],
-            
+
             // System permissions
             [
                 'key' => 'system.admin',
@@ -63,7 +64,7 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'システム管理',
                 'description' => 'システム全体の管理権限',
             ],
-            
+
             // Technical permissions
             [
                 'key' => 'technical.read',
@@ -72,7 +73,7 @@ class PermissionSeeder extends Seeder
                 'display_name' => '技術情報閲覧',
                 'description' => '技術関連情報の閲覧権限',
             ],
-            
+
             // Sales permissions
             [
                 'key' => 'sales.read',
@@ -81,7 +82,7 @@ class PermissionSeeder extends Seeder
                 'display_name' => '営業情報閲覧',
                 'description' => '営業関連情報の閲覧権限',
             ],
-            
+
             // Finance permissions
             [
                 'key' => 'finance.read',
@@ -93,14 +94,16 @@ class PermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permissionData) {
-            Permission::create([
-                'id' => str()->ulid()->toString(),
-                'key' => $permissionData['key'],
-                'resource' => $permissionData['resource'],
-                'action' => $permissionData['action'],
-                'display_name' => $permissionData['display_name'],
-                'description' => $permissionData['description'],
-            ]);
+            Permission::firstOrCreate(
+                ['key' => $permissionData['key']],
+                [
+                    'id' => Str::ulid()->toString(),
+                    'resource' => $permissionData['resource'],
+                    'action' => $permissionData['action'],
+                    'display_name' => $permissionData['display_name'],
+                    'description' => $permissionData['description'],
+                ]
+            );
         }
     }
 }

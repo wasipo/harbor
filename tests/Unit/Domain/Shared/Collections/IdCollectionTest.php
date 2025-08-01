@@ -9,9 +9,12 @@ use App\Domain\Shared\Collections\CollectionBehavior;
 use App\Domain\Shared\Collections\IdCollection;
 use Closure;
 use DomainException;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
 // テスト用の具象クラス
+/**
+ * @extends IdCollection<UserId>
+ */
 final class TestIdCollection extends IdCollection
 {
     /**
@@ -21,6 +24,7 @@ final class TestIdCollection extends IdCollection
     {
         return CollectionBehavior::STRICT_NO_DUPLICATES;
     }
+
     /**
      * @return Closure(string): UserId
      */
@@ -30,7 +34,7 @@ final class TestIdCollection extends IdCollection
     }
 }
 
-class IdCollectionTest extends TestCase
+class IdCollectionTest extends UnitTestCase
 {
     public function test_正常系_空コレクション生成(): void
     {

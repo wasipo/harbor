@@ -25,7 +25,7 @@ class RoleFactory
             id: RoleId::fromString($eloquentRole->id),
             name: $eloquentRole->name,
             displayName: $eloquentRole->display_name,
-            permissionIds: new PermissionIdCollection($permissionIds)
+            permissionIds: new PermissionIdCollection(array_values($permissionIds))
         );
     }
 
@@ -36,13 +36,14 @@ class RoleFactory
      *     id: string,
      *     name: string,
      *     display_name: string,
-     *     permission_ids?: array<string>
+     *     permission_ids?: list<string>
      * } $data
+     *
      * @throws Exception
      */
     public static function fromArray(array $data): Role
     {
-        $permissionIds = isset($data['permission_ids']) 
+        $permissionIds = isset($data['permission_ids'])
             ? PermissionIdCollection::fromStrings($data['permission_ids'])
             : PermissionIdCollection::empty();
 

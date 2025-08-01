@@ -6,11 +6,10 @@ namespace Tests\Feature\Identity;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\FeatureTestCase;
 
-class LogoutApiTest extends TestCase
+class LogoutApiTest extends FeatureTestCase
 {
     use RefreshDatabase;
 
@@ -18,25 +17,30 @@ class LogoutApiTest extends TestCase
     public function 正常系_ログアウト成功(): void
     {
         // Arrange
+        /** @var User $user */
         $user = User::factory()->create();
         $token = $user->createToken('test-token')->plainTextToken;
-        
+
         // トークンが存在することを確認
-        $this->assertCount(1, $user->fresh()->tokens);
+        $freshUser = $user->fresh();
+        $this->assertNotNull($freshUser);
+        $this->assertCount(1, $freshUser->tokens);
 
         // Act
         $response = $this->withHeaders([
-            'Authorization' => "Bearer {$token}"
+            'Authorization' => "Bearer {$token}",
         ])->postJson(route('api.auth.logout'));
 
         // Assert
         $response->assertOk()
             ->assertJson([
-                'message' => 'Successfully logged out'
+                'message' => 'Successfully logged out',
             ]);
-            
+
         // トークンが削除されていることを確認
-        $this->assertCount(0, $user->fresh()->tokens);
+        $freshUser = $user->fresh();
+        $this->assertNotNull($freshUser);
+        $this->assertCount(0, $freshUser->tokens);
     }
 
     #[Test]
@@ -56,7 +60,7 @@ class LogoutApiTest extends TestCase
     {
         // Arrange
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer invalid-token'
+            'Authorization' => 'Bearer invalid-token',
         ])->postJson(route('api.auth.logout'));
 
         // Assert

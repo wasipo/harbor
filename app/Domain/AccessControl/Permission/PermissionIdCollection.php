@@ -20,6 +20,7 @@ final class PermissionIdCollection extends UlidIdCollection
     {
         return CollectionBehavior::STRICT_NO_DUPLICATES;
     }
+
     /**
      * @return Closure(string): PermissionId
      */
@@ -29,7 +30,7 @@ final class PermissionIdCollection extends UlidIdCollection
     }
 
     /**
-     * @param array<int, string> $permissionIds
+     * @param  array<int, string>  $permissionIds
      */
     public function including(array $permissionIds): self
     {

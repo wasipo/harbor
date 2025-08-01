@@ -6,7 +6,6 @@
 /storage/debugbar/*
 /vendor
 .env
-.env.*
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -32,3 +31,6 @@ cookies.txt
 /storage/app/
 /storage/debugbar/
 /storage/framework/
+
+# nodeのLockは無視する
+package-lock.json

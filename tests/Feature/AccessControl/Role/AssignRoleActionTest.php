@@ -2,21 +2,20 @@
 
 namespace Tests\Feature\AccessControl\Role;
 
-use App\Application\AccessControl\Role\AssignRoleAction;
 use App\Adapter\AccessControl\Role\AssignRoleCommand;
+use App\Application\AccessControl\Role\AssignRoleAction;
 use App\Domain\AccessControl\Role\RoleAssignmentService;
-use App\Domain\AccessControl\Role\RoleRepositoryInterface;
-use App\Domain\Identity\UserRepositoryInterface;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserRole;
 use DomainException;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\FeatureTestCase;
 
-class AssignRoleActionTest extends TestCase
+class AssignRoleActionTest extends FeatureTestCase
 {
     use RefreshDatabase;
 
@@ -36,15 +35,15 @@ class AssignRoleActionTest extends TestCase
             'is_active' => true,
         ]);
         $role = Role::factory()->create();
-        
+
         $command = new AssignRoleCommand(
             userId: $user->id,
-            roleId: $role->ulid,
+            roleId: $role->id,
         );
-        
+
         // Act
         ($this->action)($command);
-        
+
         // Assert
         $this->assertDatabaseHas('user_roles', [
             'user_id' => $user->id,
@@ -61,16 +60,16 @@ class AssignRoleActionTest extends TestCase
         ]);
         $assignedBy = User::factory()->create();
         $role = Role::factory()->create();
-        
+
         $command = new AssignRoleCommand(
             userId: $user->id,
-            roleId: $role->ulid,
+            roleId: $role->id,
             assignedByUserId: $assignedBy->id,
         );
-        
+
         // Act
         ($this->action)($command);
-        
+
         // Assert
         $this->assertDatabaseHas('user_roles', [
             'user_id' => $user->id,
@@ -87,16 +86,16 @@ class AssignRoleActionTest extends TestCase
             'is_active' => true,
         ]);
         $role = Role::factory()->create();
-        
+
         $command = new AssignRoleCommand(
             userId: $user->id,
-            roleId: $role->ulid,
+            roleId: $role->id,
             assignedByUserId: null,
         );
-        
+
         // Act
         ($this->action)($command);
-        
+
         // Assert
         $this->assertDatabaseHas('user_roles', [
             'user_id' => $user->id,
@@ -110,16 +109,16 @@ class AssignRoleActionTest extends TestCase
     {
         // Arrange
         $role = Role::factory()->create();
-        
+
         $command = new AssignRoleCommand(
-            userId: 9999,
-            roleId: $role->ulid,
+            userId: '01HJ0YXPQR8X5M0TH5BCKZ3WEF',
+            roleId: $role->id,
         );
-        
+
         // Act & Assert
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('User not found');
-        
+
         ($this->action)($command);
     }
 
@@ -130,16 +129,16 @@ class AssignRoleActionTest extends TestCase
         $user = User::factory()->create([
             'is_active' => true,
         ]);
-        
+
         $command = new AssignRoleCommand(
             userId: $user->id,
-            roleId: str()->ulid(),
+            roleId: Str::ulid()->toString(),
         );
-        
+
         // Act & Assert
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Role not found');
-        
+
         ($this->action)($command);
     }
 
@@ -151,16 +150,16 @@ class AssignRoleActionTest extends TestCase
             'is_active' => false,
         ]);
         $role = Role::factory()->create();
-        
+
         $command = new AssignRoleCommand(
             userId: $user->id,
-            roleId: $role->ulid,
+            roleId: $role->id,
         );
-        
+
         // Act & Assert
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Cannot assign role to inactive user');
-        
+
         ($this->action)($command);
     }
 
@@ -172,23 +171,26 @@ class AssignRoleActionTest extends TestCase
             'is_active' => true,
         ]);
         $role = Role::factory()->create();
-        
+
         $command = new AssignRoleCommand(
             userId: $user->id,
-            roleId: $role->ulid,
+            roleId: $role->id,
         );
-        
+
         // トランザクション中にエラーを発生させるためのモック設定
         $this->app->bind(RoleAssignmentService::class, function () {
             $mock = $this->mock(RoleAssignmentService::class);
+            // todo: mockeryをstanが完全に理解してないため無視(型拡張をいつかやる)
+            // @phpstan-ignore-next-line
             $mock->shouldReceive('assignRole')
                 ->andThrow(new Exception('Test exception'));
+
             return $mock;
         });
-        
+
         // Action を再取得（モックが適用されるように）
         $action = app(AssignRoleAction::class);
-        
+
         // Act & Assert
         try {
             $action($command);
@@ -209,21 +211,21 @@ class AssignRoleActionTest extends TestCase
         $user = User::factory()->create([
             'is_active' => true,
         ]);
-        
+
         $roles = [];
         for ($i = 0; $i < 5; $i++) {
             $roles[] = Role::factory()->create();
         }
-        
+
         // Act
         foreach ($roles as $role) {
             $command = new AssignRoleCommand(
                 userId: $user->id,
-                roleId: $role->ulid,
+                roleId: $role->id,
             );
             ($this->action)($command);
         }
-        
+
         // Assert
         $this->assertEquals(5, UserRole::where('user_id', $user->id)->count());
         foreach ($roles as $role) {

@@ -6,14 +6,11 @@ namespace App\Http\Controllers\Api\Identity;
 
 use App\Adapter\Identity\LoginCommand;
 use App\Application\Identity\LoginAction;
-use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Identity\LoginRequest;
 use App\Presenter\Identity\AuthResponseBuilderInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
-
-use App\Http\Requests\Api\Identity\LoginRequest;
 
 readonly class LoginController
 {
@@ -24,6 +21,7 @@ readonly class LoginController
 
     /**
      * ログインAPI
+     *
      * @throws ValidationException
      */
     public function __invoke(LoginRequest $request): JsonResponse

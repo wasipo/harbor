@@ -9,7 +9,7 @@ use InvalidArgumentException;
 
 /**
  * Base class for ULID-based ID value objects
- * 
+ *
  * Provides factory methods and ULID validation
  */
 abstract readonly class AbstractUlidId extends AbstractId
@@ -20,7 +20,7 @@ abstract readonly class AbstractUlidId extends AbstractId
         if (!Str::isUlid($value)) {
             throw new InvalidArgumentException('Invalid ULID');
         }
-        
+
         parent::__construct($value);
     }
 

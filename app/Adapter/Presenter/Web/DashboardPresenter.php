@@ -11,7 +11,6 @@ final class DashboardPresenter
     /**
      * ダッシュボード表示用のレスポンスを構築
      *
-     * @param DashboardDataDTO $data
      * @return array<string, mixed>
      */
     public function present(DashboardDataDTO $data): array
@@ -22,7 +21,7 @@ final class DashboardPresenter
                 'name' => $data->name,
                 'email' => $data->email,
                 'categories' => array_map(
-                    fn($category) => [
+                    fn ($category) => [
                         'id' => $category->id,
                         'code' => $category->code,
                         'name' => $category->name,
@@ -32,7 +31,7 @@ final class DashboardPresenter
                     $data->categories
                 ),
                 'roles' => array_map(
-                    fn($role) => [
+                    fn ($role) => [
                         'id' => $role->id,
                         'key' => $role->key,
                         'name' => $role->name,
@@ -42,7 +41,7 @@ final class DashboardPresenter
                     $data->roles
                 ),
                 'permissions' => array_map(
-                    fn($permission) => [
+                    fn ($permission) => [
                         'id' => $permission->id,
                         'key' => $permission->key,
                         'name' => $permission->name,

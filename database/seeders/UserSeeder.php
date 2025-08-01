@@ -81,6 +81,7 @@ class UserSeeder extends Seeder
                         'category_id' => $category->id,
                     ],
                     [
+                        'id' => Str::ulid()->toString(),
                         'is_primary' => true,
                         'effective_from' => now()->toDateString(),
                         'effective_until' => null,
@@ -97,6 +98,7 @@ class UserSeeder extends Seeder
                         'role_id' => $role->id,
                     ],
                     [
+                        'id' => Str::ulid()->toString(),
                         'assigned_at' => now(),
                     ]
                 );

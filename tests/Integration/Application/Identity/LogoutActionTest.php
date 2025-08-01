@@ -11,15 +11,15 @@ use App\Models\User;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use RuntimeException;
-use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
+use Tests\UnitTestCase;
 
-class LogoutActionTest extends TestCase
+class LogoutActionTest extends UnitTestCase
 {
     use RefreshDatabase;
-    
+
     private LogoutAction $action;
     private AuthSessionManager $authSessionManager;
     /** @var LoggerInterface&MockObject */
@@ -31,10 +31,10 @@ class LogoutActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->authSessionManager = new AuthSessionManager();
+
+        $this->authSessionManager = new AuthSessionManager;
         $this->logger = $this->createMock(LoggerInterface::class);
-        
+
         $this->action = new LogoutAction(
             authSessionManager: $this->authSessionManager,
             logger: $this->logger
@@ -49,16 +49,17 @@ class LogoutActionTest extends TestCase
     {
         // Arrange
         $user = User::factory()->create([
-            'ulid' => '01HZKT234567890ABCDEFGHIJK'
+            'id' => '01HZKT234567890ABCDEFGHIJK',
         ]);
         Auth::login($user);
-        
+
         $this->logger->expects($this->exactly(2))
             ->method('info')
-            ->willReturnCallback(function ($message, $context) {
+            ->willReturnCallback(function (string $message, array $context): void {
+                /** @var int $callCount */
                 static $callCount = 0;
                 $callCount++;
-                
+
                 if ($callCount === 1) {
                     $this->assertEquals('Logout attempt started', $message);
                     $this->assertEquals(['user_id' => '01HZKT234567890ABCDEFGHIJK'], $context);
@@ -83,19 +84,19 @@ class LogoutActionTest extends TestCase
     {
         // Arrange - 未認証状態
         Auth::logout();
-        
+
         $this->logger->expects($this->once())
             ->method('error')
             ->with(
                 'Logout failed',
-                $this->callback(function ($context) {
+                $this->callback(function (array $context): bool {
                     return isset($context['error']) && isset($context['trace']);
                 })
             );
 
         // Act & Assert
         $this->expectException(RuntimeException::class);
-        
+
         ($this->action)();
     }
 }

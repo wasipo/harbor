@@ -14,15 +14,6 @@ readonly class LoginCommand implements LoginActionValuesInterface
         public bool $remember = false,
     ) {}
 
-    public static function fromRequest(array $validated): self
-    {
-        return new self(
-            email: $validated['email'],
-            password: $validated['password'],
-            remember: $validated['remember'] ?? false
-        );
-    }
-
     public function email(): string
     {
         return $this->email;
@@ -36,5 +27,20 @@ readonly class LoginCommand implements LoginActionValuesInterface
     public function remember(): bool
     {
         return $this->remember;
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    public static function fromRequest(array $validated): self
+    {
+        $email = $validated['email'] ?? '';
+        $password = $validated['password'] ?? '';
+
+        return new self(
+            email: is_string($email) ? $email : '',
+            password: is_string($password) ? $password : '',
+            remember: (bool) ($validated['remember'] ?? false)
+        );
     }
 }

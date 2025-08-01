@@ -21,6 +21,7 @@ final class CategoryIdCollection extends UlidIdCollection
     {
         return CollectionBehavior::STRICT_NO_DUPLICATES;
     }
+
     /**
      * @return Closure(string): UserCategoryId
      */
@@ -30,7 +31,7 @@ final class CategoryIdCollection extends UlidIdCollection
     }
 
     /**
-     * @param array<int, string> $categoryIds
+     * @param  array<int, string>  $categoryIds
      */
     public function including(array $categoryIds): self
     {
@@ -42,17 +43,15 @@ final class CategoryIdCollection extends UlidIdCollection
     /**
      * 主所属カテゴリIDを取得
      * ビジネスルール：最初のカテゴリが主所属
-     * 
-     * @return UserCategoryId
      */
     public function getPrimaryId(): UserCategoryId
     {
         $id = $this->first();
-        
+
         if ($id === null) {
             throw new DomainException('No categories in collection to determine primary ID');
         }
-        
+
         return $id;
     }
 }

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Adapter\Identity;
 
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
 use RuntimeException;
-use Illuminate\Support\Carbon;
 
 final class AuthSessionManager
 {
@@ -43,7 +43,7 @@ final class AuthSessionManager
         if (!$user->isActive()) {
             // 非アクティブユーザーはログアウトさせる
             Auth::logout();
-            
+
             throw ValidationException::withMessages([
                 'email' => ['アカウントが無効化されています。'],
             ]);
@@ -52,7 +52,7 @@ final class AuthSessionManager
 
     /**
      * 認証トークン生成（＋有効期限を返す）
-     * 
+     *
      * @return array{0: string, 1: Carbon}
      */
     public function generateToken(User $user): array
@@ -70,12 +70,27 @@ final class AuthSessionManager
     public function logout(?User $user = null): void
     {
         $user = $user ?? Auth::user();
-        
-        if ($user instanceof User && $user->currentAccessToken()) {
+
+        // APIトークンがあればAPI認証のログアウト
+        if ($user instanceof User && $this->hasApiToken($user)) {
             $this->revokeApiToken($user);
-        } else {
-            $this->logoutWebSession();
+
+            return;
         }
+
+        // それ以外はWebセッションのログアウト
+        $this->logoutWebSession();
+    }
+
+    /**
+     * ユーザーがAPIトークンを持っているかチェック
+     */
+    private function hasApiToken(User $user): bool
+    {
+        /** @var PersonalAccessToken|null $token */
+        $token = $user->currentAccessToken();
+
+        return $token !== null;
     }
 
     /**
@@ -93,8 +108,6 @@ final class AuthSessionManager
      */
     private function logoutWebSession(): void
     {
-        if (method_exists(Auth::guard(), 'logout')) {
-            Auth::logout();
-        }
+        Auth::logout();
     }
 }

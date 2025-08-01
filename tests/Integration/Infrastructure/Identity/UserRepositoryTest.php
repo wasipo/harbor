@@ -12,14 +12,14 @@ use App\Domain\Identity\User;
 use App\Domain\Identity\UserId;
 use App\Infrastructure\Identity\UserRepository;
 use App\Infrastructure\Shared\Security\PasswordHasher;
+use App\Models\Role;
 use App\Models\User as EloquentUser;
 use App\Models\UserCategory;
-use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Factories\Domain\Identity\TestUserFactory;
-use Tests\TestCase;
+use Tests\UnitTestCase;
 
-class UserRepositoryTest extends TestCase
+class UserRepositoryTest extends UnitTestCase
 {
     use RefreshDatabase;
 
@@ -28,11 +28,11 @@ class UserRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $passwordHasher = new PasswordHasher();
+        $passwordHasher = new PasswordHasher;
         $this->repository = new UserRepository($passwordHasher);
     }
 
-    public function test_正常系_IDで検索成功(): void
+    public function test_正常系_i_dで検索成功(): void
     {
         // Arrange
         $eloquentUser = EloquentUser::factory()->create([
@@ -53,7 +53,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals('test@example.com', $user->email->value);
     }
 
-    public function test_正常系_存在しないIDはnull(): void
+    public function test_正常系_存在しない_i_dはnull(): void
     {
         // Arrange
         $nonExistentId = UserId::create();
@@ -130,8 +130,9 @@ class UserRepositoryTest extends TestCase
             'email' => 'new@example.com',
             'is_active' => true,
         ]);
-        
+
         $eloquentUser = EloquentUser::find($savedUser->id->toString());
+        $this->assertNotNull($eloquentUser);
         $this->assertTrue(password_verify($password, $eloquentUser->password));
     }
 
@@ -195,11 +196,11 @@ class UserRepositoryTest extends TestCase
         $user = EloquentUser::factory()->create();
         $category1 = UserCategory::factory()->create();
         $category2 = UserCategory::factory()->create();
-        
+
         $userId = UserId::fromString($user->id);
         $categoryIds = CategoryIdCollection::fromStrings([
             $category1->id,
-            $category2->id
+            $category2->id,
         ]);
         $primaryCategoryId = UserCategoryId::fromString($category1->id);
 
@@ -226,12 +227,12 @@ class UserRepositoryTest extends TestCase
         $assignedBy = EloquentUser::factory()->create();
         $role1 = Role::factory()->create();
         $role2 = Role::factory()->create();
-        
+
         $userId = UserId::fromString($user->id);
         $assignedById = UserId::fromString($assignedBy->id);
         $roleIds = RoleIdCollection::fromStrings([
             $role1->id,
-            $role2->id
+            $role2->id,
         ]);
 
         // Act

@@ -9,9 +9,12 @@ use App\Domain\Shared\Collections\CollectionBehavior;
 use App\Domain\Shared\Collections\IdCollection;
 use Closure;
 use DomainException;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
 // STRICT_NO_DUPLICATES のテスト用
+/**
+ * @extends IdCollection<UserId>
+ */
 final class StrictIdCollection extends IdCollection
 {
     protected function behavior(): CollectionBehavior
@@ -26,6 +29,9 @@ final class StrictIdCollection extends IdCollection
 }
 
 // UNIQUE_SILENT のテスト用
+/**
+ * @extends IdCollection<UserId>
+ */
 final class SilentIdCollection extends IdCollection
 {
     protected function behavior(): CollectionBehavior
@@ -40,6 +46,9 @@ final class SilentIdCollection extends IdCollection
 }
 
 // ALLOW_DUPLICATES のテスト用
+/**
+ * @extends IdCollection<UserId>
+ */
 final class AllowDuplicatesIdCollection extends IdCollection
 {
     protected function behavior(): CollectionBehavior
@@ -53,9 +62,9 @@ final class AllowDuplicatesIdCollection extends IdCollection
     }
 }
 
-class IdCollectionBehaviorTest extends TestCase
+class IdCollectionBehaviorTest extends UnitTestCase
 {
-    public function test_STRICT_NO_DUPLICATES_重複時にエラー(): void
+    public function test_strict_重複idで例外発生(): void
     {
         // Arrange
         $id1 = UserId::create();
@@ -68,7 +77,7 @@ class IdCollectionBehaviorTest extends TestCase
         new StrictIdCollection([$id1, $id2, $id1]); // id1が重複
     }
 
-    public function test_STRICT_NO_DUPLICATES_重複なしで正常生成(): void
+    public function test_strict_重複なしで正常生成(): void
     {
         // Arrange
         $id1 = UserId::create();
@@ -83,7 +92,7 @@ class IdCollectionBehaviorTest extends TestCase
         $this->assertTrue($collection->contains($id2));
     }
 
-    public function test_UNIQUE_SILENT_重複を静かに除去(): void
+    public function test_unique_silent_重複idを静かに除去(): void
     {
         // Arrange
         $id1 = UserId::create();
@@ -98,7 +107,7 @@ class IdCollectionBehaviorTest extends TestCase
         $this->assertTrue($collection->contains($id2));
     }
 
-    public function test_ALLOW_DUPLICATES_重複を許可(): void
+    public function test_allow_duplicates_重複idをそのまま保持(): void
     {
         // Arrange
         $id1 = UserId::create();
@@ -119,7 +128,7 @@ class IdCollectionBehaviorTest extends TestCase
         $this->assertEquals(2, $id1Count);
     }
 
-    public function test_fromStrings_各behavior動作確認(): void
+    public function test_全behavior_from_strings正常動作(): void
     {
         // Arrange
         $strings = ['01ARZ3NDEKTSV4RRFFQ69G5FAV', '01ARZ3NDEKTSV4RRFFQ69G5FAW'];
@@ -135,7 +144,7 @@ class IdCollectionBehaviorTest extends TestCase
         $this->assertCount(2, $allowCollection);
     }
 
-    public function test_fromStrings_重複文字列での各behavior(): void
+    public function test_strict_from_stringsで重複時例外(): void
     {
         // Arrange
         $ulid = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
@@ -146,7 +155,7 @@ class IdCollectionBehaviorTest extends TestCase
         StrictIdCollection::fromStrings($duplicateStrings);
     }
 
-    public function test_fromStrings_重複文字列でSILENT(): void
+    public function test_unique_silent_from_stringsで重複除去(): void
     {
         // Arrange
         $ulid = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
@@ -159,7 +168,7 @@ class IdCollectionBehaviorTest extends TestCase
         $this->assertCount(1, $collection);
     }
 
-    public function test_fromStrings_重複文字列でALLOW(): void
+    public function test_allow_duplicates_from_stringsで重複保持(): void
     {
         // Arrange
         $ulid = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
@@ -172,19 +181,7 @@ class IdCollectionBehaviorTest extends TestCase
         $this->assertCount(2, $collection);
     }
 
-    public function test_including_メソッドが各behaviorで正しく動作(): void
-    {
-        // Arrange
-        $id1 = UserId::create();
-        $id2 = UserId::create();
-        $strictBase = new StrictIdCollection([$id1]);
-
-        // Act & Assert - incluindgメソッドは具象クラスで実装が必要
-        // 今回はテストをスキップ（具象クラスで別途テスト）
-        $this->assertTrue(true);
-    }
-
-    public function test_toStringArray_各behaviorで動作(): void
+    public function test_全behavior_to_string_array正常動作(): void
     {
         // Arrange
         $id1 = UserId::create();
@@ -195,13 +192,12 @@ class IdCollectionBehaviorTest extends TestCase
         $stringArray = $collection->toStringArray();
 
         // Assert
-        $this->assertIsArray($stringArray);
         $this->assertCount(2, $stringArray);
         $this->assertEquals($id1->toString(), $stringArray[0]);
         $this->assertEquals($id2->toString(), $stringArray[1]);
     }
 
-    public function test_hasId_各behaviorで動作(): void
+    public function test_全behavior_has_idで存在確認(): void
     {
         // Arrange
         $id1 = UserId::create();
@@ -217,7 +213,7 @@ class IdCollectionBehaviorTest extends TestCase
         $this->assertFalse($collection->hasId($id3));
     }
 
-    public function test_isEmpty_isNotEmpty_各behaviorで動作(): void
+    public function test_全behavior_空判定メソッド動作(): void
     {
         // Arrange & Act
         $emptyCollection = StrictIdCollection::empty();

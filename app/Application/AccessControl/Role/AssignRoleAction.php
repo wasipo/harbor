@@ -4,8 +4,9 @@ namespace App\Application\AccessControl\Role;
 
 use App\Adapter\AccessControl\Role\AssignRoleCommand;
 use App\Domain\AccessControl\Role\RoleAssignmentService;
-use App\Domain\AccessControl\Role\RoleRepositoryInterface;
 use App\Domain\AccessControl\Role\RoleId;
+use App\Domain\AccessControl\Role\RoleRepositoryInterface;
+use App\Domain\Identity\UserId;
 use App\Domain\Identity\UserRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +22,10 @@ class AssignRoleAction
     {
         DB::transaction(function () use ($command) {
             // ユーザー取得
-            $user = $this->userRepository->findById($command->userId);
+
+            $userId = new UserId($command->userId);
+
+            $user = $this->userRepository->findById($userId);
             if ($user === null) {
                 throw new \DomainException('User not found');
             }
@@ -35,7 +39,8 @@ class AssignRoleAction
             // 割り当て実行者取得（オプション）
             $assignedBy = null;
             if ($command->assignedByUserId !== null) {
-                $assignedBy = $this->userRepository->findById($command->assignedByUserId);
+                $assignedByUserId = new UserId($command->assignedByUserId);
+                $assignedBy = $this->userRepository->findById($assignedByUserId);
             }
 
             // ドメインサービスでロール割り当て

@@ -7,7 +7,7 @@ namespace App\Adapter\AccessControl\Category;
 final readonly class CategoryDataDTO
 {
     /**
-     * @param array<string> $permissionKeys
+     * @param  array<string>  $permissionKeys
      */
     public function __construct(
         public string $id,

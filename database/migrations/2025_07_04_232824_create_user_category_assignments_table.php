@@ -12,20 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_category_assignments', function (Blueprint $table) {
-            // 主キー（履歴管理のため独自ID）
-            $table->id();
-            
+            // ULID主キー
+            $table->ulid('id')->primary();
+
             // 外部キー関連（ユーザーとカテゴリの紐付け）
             $table->foreignUlid('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignUlid('category_id')->constrained('user_categories')->onDelete('cascade');
-            
+
             // 割り当て属性
             $table->boolean('is_primary')->default(false)->comment('主種別フラグ（ユーザーの主たる職種）');
-            
+
             // 履歴管理（同一ユーザー・カテゴリでも期間違いで複数レコード可能）
             $table->date('effective_from')->comment('有効開始日（この日からカテゴリが有効）');
             $table->date('effective_until')->nullable()->comment('有効終了日（nullは無期限）');
-            
+
             // 監査用タイムスタンプ
             $table->timestamps();
 

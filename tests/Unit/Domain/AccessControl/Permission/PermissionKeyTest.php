@@ -6,9 +6,9 @@ namespace Tests\Unit\Domain\AccessControl\Permission;
 
 use App\Domain\AccessControl\Permission\PermissionKey;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
-class PermissionKeyTest extends TestCase
+class PermissionKeyTest extends UnitTestCase
 {
     public function test_正常系_有効なキーで作成(): void
     {

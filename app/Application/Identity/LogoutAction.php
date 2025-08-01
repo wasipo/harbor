@@ -20,20 +20,20 @@ readonly class LogoutAction
         try {
             // 現在のユーザー情報を取得
             $user = $this->authSessionManager->user();
-            $userId = $user->ulid;
-            
+            $userId = $user->id;
+
             $this->logger->info('Logout attempt started', ['user_id' => $userId]);
-            
+
             // ログアウト処理
             $this->authSessionManager->logout($user);
-            
+
             $this->logger->info('Logout successful', ['user_id' => $userId]);
-            
+
         } catch (Exception $e) {
             // ログアウトは基本的に失敗しないが、念のため
             $this->logger->error('Logout failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }

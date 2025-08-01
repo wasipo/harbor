@@ -22,7 +22,7 @@ readonly class LogoutController
         ($this->logoutAction)();
 
         return response()->json([
-            'message' => 'Successfully logged out'
+            'message' => 'Successfully logged out',
         ], Response::HTTP_OK);
     }
 }

@@ -33,10 +33,8 @@ readonly class AuthOutputDTO
      *             email: string,
      *             is_active: bool,
      *             email_verified_at: string|null,
-     *             created_at: string,
-     *             updated_at: string,
-     *             categories: array<int, array{id: int, code: string, name: string, display_name: string, description: string|null}>,
-     *             roles: array<int, array{id: int, name: string, display_name: string, description: string|null, permissions: array<int, string>}>
+     *             categoryIds: array<string>,
+     *             roleIds: array<string>
      *         },
      *         token: string,
      *         expires_at: string

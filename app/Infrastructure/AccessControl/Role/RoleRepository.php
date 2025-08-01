@@ -30,7 +30,9 @@ class RoleRepository implements RoleRepositoryInterface
      */
     public function findAll(): Collection
     {
-        return EloquentRole::all()->map(fn (EloquentRole $eloquentRole) => RoleFactory::fromEloquent($eloquentRole));
+        $eloquentRoles = EloquentRole::all();
+
+        return $eloquentRoles->map(fn (EloquentRole $eloquentRole) => RoleFactory::fromEloquent($eloquentRole));
     }
 
     public function save(Role $role): Role
@@ -60,5 +62,4 @@ class RoleRepository implements RoleRepositoryInterface
     {
         return EloquentRole::where('id', $id->toString())->exists();
     }
-
 }

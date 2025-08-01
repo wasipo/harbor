@@ -16,15 +16,15 @@ interface PermissionRepositoryInterface
 
     /**
      * Find multiple permissions by their keys
-     * 
-     * @param array<int, string> $keys
+     *
+     * @param  array<int, string>  $keys
      * @return array<int, Permission>
      */
     public function findByKeys(array $keys): array;
 
     /**
      * Find all permissions for a specific resource
-     * 
+     *
      * @return array<int, Permission>
      */
     public function findByResource(string $resource): array;
@@ -36,7 +36,7 @@ interface PermissionRepositoryInterface
 
     /**
      * Get all permissions
-     * 
+     *
      * @return array<int, Permission>
      */
     public function all(): array;

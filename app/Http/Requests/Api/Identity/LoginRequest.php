@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\Identity;
 
 use App\Application\Identity\LoginActionValuesInterface;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use RuntimeException;
 
 class LoginRequest extends FormRequest implements LoginActionValuesInterface
 {
@@ -21,7 +21,7 @@ class LoginRequest extends FormRequest implements LoginActionValuesInterface
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, array<int, string>>
      */
     public function rules(): array
     {
@@ -48,16 +48,28 @@ class LoginRequest extends FormRequest implements LoginActionValuesInterface
 
     public function email(): string
     {
-        return $this->validated('email');
+        $email = $this->validated('email');
+        if (!is_string($email)) {
+            throw new RuntimeException('Email must be a string');
+        }
+
+        return $email;
     }
 
     public function password(): string
     {
-        return $this->validated('password');
+        $password = $this->validated('password');
+        if (!is_string($password)) {
+            throw new RuntimeException('Password must be a string');
+        }
+
+        return $password;
     }
 
     public function remember(): bool
     {
-        return $this->validated('remember', false);
+        $remember = $this->validated('remember', false);
+
+        return (bool) $remember;
     }
 }

@@ -15,13 +15,13 @@ return new class extends Migration
             // 外部キー
             $table->foreignUlid('category_id')->constrained('user_categories')->cascadeOnDelete();
             $table->foreignUlid('permission_id')->constrained()->cascadeOnDelete();
-            
+
             // 監査用タイムスタンプ
             $table->timestamps();
-            
+
             // 複合主キー設定
             $table->primary(['category_id', 'permission_id']);
-            
+
             // 外部キー制約なし（方針に従う）
         });
     }

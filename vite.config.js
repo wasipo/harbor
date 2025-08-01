@@ -9,7 +9,6 @@ export default defineConfig({
             input: 'resources/js/app/app.tsx',
             refresh: true,
         }),
-        react(),
         tailwindcss(),
     ],
     build: {
@@ -26,10 +25,9 @@ export default defineConfig({
     },
     server: {
         host: '0.0.0.0',
-        port: parseInt(process.env.VITE_PORT || '5174'),
+        port: 5173,
         hmr: {
             host: 'localhost',
-            port: parseInt(process.env.VITE_PORT || '5174'),
         },
         strictPort: true,
         watch: {

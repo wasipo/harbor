@@ -17,21 +17,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $is_active
  * @property \Carbon\CarbonImmutable $created_at
  * @property \Carbon\CarbonImmutable $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserCategoryAssignment> $assignments
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $activeUsers
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Permission> $permissions
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, UserCategoryAssignment> $assignments
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $activeUsers
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Permission> $permissions
  * @property-read int|null $assignments_count
  * @property-read int|null $users_count
  * @property-read int|null $active_users_count
  * @property-read int|null $permissions_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserCategory where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder|UserCategory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserCategory whereCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserCategory whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserCategory whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserCategory create(array $attributes = [])
- * @method static \Illuminate\Database\Eloquent\Builder|UserCategory updateOrCreate(array $attributes, array $values = [])
  * @method static UserCategory|null find($id, $columns = ['*'])
  * @method static UserCategory|null first()
  * @method static \Database\Factories\UserCategoryFactory factory($count = null, $state = [])
@@ -39,13 +38,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class UserCategory extends Model
 {
+    /** @use HasFactory<\Database\Factories\UserCategoryFactory> */
     use HasFactory;
 
     /**
      * キータイプをstringに設定（ULID使用）
      */
     protected $keyType = 'string';
-    
+
     /**
      * 自動増分を無効化（ULID使用）
      */
@@ -76,11 +76,17 @@ class UserCategory extends Model
     }
 
     // Relationships
+    /**
+     * @return HasMany<UserCategoryAssignment, $this>
+     */
     public function assignments(): HasMany
     {
         return $this->hasMany(UserCategoryAssignment::class, 'category_id');
     }
 
+    /**
+     * @return BelongsToMany<User, $this>
+     */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -91,6 +97,9 @@ class UserCategory extends Model
         )->withPivot('is_primary', 'effective_from', 'effective_until');
     }
 
+    /**
+     * @return BelongsToMany<User, $this>
+     */
     public function activeUsers(): BelongsToMany
     {
         return $this->users()
@@ -101,6 +110,9 @@ class UserCategory extends Model
             });
     }
 
+    /**
+     * @return BelongsToMany<Permission, $this>
+     */
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(

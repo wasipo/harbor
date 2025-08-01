@@ -2,8 +2,6 @@
 
 namespace App\Domain\AccessControl\Category;
 
-use App\Domain\Identity\ValueObjects\UserCategoryId;
-
 readonly class IdentityUserCategory
 {
     public function __construct(

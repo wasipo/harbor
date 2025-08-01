@@ -9,7 +9,7 @@ use App\Domain\AccessControl\Category\UserCategory;
 readonly class UserCategoryOutputDTO
 {
     public function __construct(
-        public int $id,
+        public string $id,
         public string $code,
         public string $name,
         public ?string $description,
@@ -19,7 +19,7 @@ readonly class UserCategoryOutputDTO
     public static function fromModel(UserCategory $category): self
     {
         return new self(
-            id: $category->id,
+            id: $category->id->toString(),
             code: $category->code,
             name: $category->name,
             description: $category->description,
@@ -38,7 +38,7 @@ readonly class UserCategoryOutputDTO
 
     /**
      * @return array{
-     *     id: int,
+     *     id: string,
      *     code: string,
      *     name: string,
      *     description: string|null,

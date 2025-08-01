@@ -7,9 +7,9 @@ use App\Domain\AccessControl\Role\RoleId;
 use App\Infrastructure\AccessControl\Role\RoleRepository;
 use App\Models\Role as EloquentRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\UnitTestCase;
 
-class RoleRepositoryTest extends TestCase
+class RoleRepositoryTest extends UnitTestCase
 {
     use RefreshDatabase;
 
@@ -21,7 +21,7 @@ class RoleRepositoryTest extends TestCase
         $this->repository = new RoleRepository;
     }
 
-    public function test_正常系_IDで検索成功(): void
+    public function test_正常系_i_dで検索成功(): void
     {
         // Arrange
         $eloquentRole = EloquentRole::factory()->create([
@@ -42,7 +42,7 @@ class RoleRepositoryTest extends TestCase
         $this->assertEquals('Administrator', $role->displayName);
     }
 
-    public function test_正常系_存在しないIDはnull(): void
+    public function test_正常系_存在しない_i_dはnull(): void
     {
         // Arrange
         $nonExistentId = RoleId::fromString('01K0EAT5EBYR2SV2EHSCQ7WDK1');
@@ -182,7 +182,7 @@ class RoleRepositoryTest extends TestCase
         $this->assertFalse($this->repository->existsByName('nonexistent'));
     }
 
-    public function test_正常系_IDで存在確認(): void
+    public function test_正常系_i_dで存在確認(): void
     {
         // Arrange
         EloquentRole::factory()->create([

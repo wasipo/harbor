@@ -13,7 +13,7 @@ class PermissionRepository implements PermissionRepositoryInterface
     public function findById(PermissionId $id): ?Permission
     {
         $eloquentPermission = EloquentPermission::where('id', $id->toString())->first();
-        
+
         if ($eloquentPermission === null) {
             return null;
         }
@@ -24,7 +24,7 @@ class PermissionRepository implements PermissionRepositoryInterface
     public function findByKey(string $key): ?Permission
     {
         $eloquentPermission = EloquentPermission::where('key', $key)->first();
-        
+
         if ($eloquentPermission === null) {
             return null;
         }
@@ -39,19 +39,25 @@ class PermissionRepository implements PermissionRepositoryInterface
         }
 
         $eloquentPermissions = EloquentPermission::whereIn('key', $keys)->get();
-        
-        return $eloquentPermissions->map(
-            fn($eloquentPermission) => PermissionFactory::fromEloquent($eloquentPermission)
-        )->toArray();
+
+        /** @var array<int, Permission> $permissions */
+        $permissions = $eloquentPermissions->map(
+            fn (EloquentPermission $eloquentPermission) => PermissionFactory::fromEloquent($eloquentPermission)
+        )->values()->toArray();
+
+        return $permissions;
     }
 
     public function findByResource(string $resource): array
     {
         $eloquentPermissions = EloquentPermission::where('resource', $resource)->get();
-        
-        return $eloquentPermissions->map(
-            fn($eloquentPermission) => PermissionFactory::fromEloquent($eloquentPermission)
-        )->toArray();
+
+        /** @var array<int, Permission> $permissions */
+        $permissions = $eloquentPermissions->map(
+            fn (EloquentPermission $eloquentPermission) => PermissionFactory::fromEloquent($eloquentPermission)
+        )->values()->toArray();
+
+        return $permissions;
     }
 
     public function create(Permission $permission): Permission
@@ -71,10 +77,13 @@ class PermissionRepository implements PermissionRepositoryInterface
     public function all(): array
     {
         $eloquentPermissions = EloquentPermission::all();
-        
-        return $eloquentPermissions->map(
-            fn($eloquentPermission) => PermissionFactory::fromEloquent($eloquentPermission)
-        )->toArray();
+
+        /** @var array<int, Permission> $permissions */
+        $permissions = $eloquentPermissions->map(
+            fn (EloquentPermission $eloquentPermission) => PermissionFactory::fromEloquent($eloquentPermission)
+        )->values()->toArray();
+
+        return $permissions;
     }
 
     public function existsByKey(string $key): bool

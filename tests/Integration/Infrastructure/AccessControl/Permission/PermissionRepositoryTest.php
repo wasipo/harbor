@@ -6,16 +6,13 @@ namespace Tests\Integration\Infrastructure\AccessControl\Permission;
 
 use App\Domain\AccessControl\Permission\Permission;
 use App\Domain\AccessControl\Permission\PermissionId;
-use App\Domain\AccessControl\Permission\PermissionKey;
-use App\Domain\AccessControl\Permission\PermissionName;
 use App\Infrastructure\AccessControl\Permission\PermissionRepository;
 use App\Models\Permission as EloquentPermission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\UnitTestCase;
 
-class PermissionRepositoryTest extends TestCase
+class PermissionRepositoryTest extends UnitTestCase
 {
     use RefreshDatabase;
 
@@ -24,11 +21,11 @@ class PermissionRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->repository = new PermissionRepository();
+        $this->repository = new PermissionRepository;
     }
 
     #[Test]
-    public function 正常系_IDで検索成功(): void
+    public function 正常系_i_dで検索成功(): void
     {
         // Arrange
         $eloquentPermission = EloquentPermission::factory()->create([
@@ -52,7 +49,7 @@ class PermissionRepositoryTest extends TestCase
     }
 
     #[Test]
-    public function 正常系_存在しないIDはnull(): void
+    public function 正常系_存在しない_i_dはnull(): void
     {
         // Arrange
         $nonExistentId = PermissionId::create();
@@ -98,7 +95,7 @@ class PermissionRepositoryTest extends TestCase
 
         // Assert
         $this->assertCount(2, $permissions);
-        $keys = array_map(fn($p) => $p->key->value, $permissions);
+        $keys = array_map(fn ($p) => $p->key->value, $permissions);
         $this->assertContains('users.create', $keys);
         $this->assertContains('users.edit', $keys);
     }

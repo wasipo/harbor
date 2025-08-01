@@ -20,6 +20,7 @@ final class RoleIdCollection extends UlidIdCollection
     {
         return CollectionBehavior::STRICT_NO_DUPLICATES;
     }
+
     /**
      * @return Closure(string): RoleId
      */
@@ -29,7 +30,7 @@ final class RoleIdCollection extends UlidIdCollection
     }
 
     /**
-     * @param array<int, string> $roleIds
+     * @param  array<int, string>  $roleIds
      */
     public function including(array $roleIds): self
     {

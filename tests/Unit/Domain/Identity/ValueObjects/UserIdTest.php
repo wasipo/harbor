@@ -4,9 +4,9 @@ namespace Tests\Unit\Domain\Identity\ValueObjects;
 
 use App\Domain\Identity\UserId;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
-class UserIdTest extends TestCase
+class UserIdTest extends UnitTestCase
 {
     public function test_正常系_uli_d生成(): void
     {
@@ -15,7 +15,6 @@ class UserIdTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(UserId::class, $userId);
-        $this->assertIsString($userId->toString());
         $this->assertEquals(26, strlen($userId->toString()));
     }
 

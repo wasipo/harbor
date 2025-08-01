@@ -28,16 +28,16 @@ readonly class AssignCategoriesAction
 
         $this->logger->info('Assigning categories to user', [
             'user_id' => $userId->toString(),
-            'category_count' => count($command->categoryIds)
+            'category_count' => count($command->categoryIds),
         ]);
 
         $categoryIds = CategoryIdCollection::fromStrings($command->categoryIds);
         $primaryCategoryId = $categoryIds->getPrimaryId();
 
         $this->userRepository->assignCategories($userId, $categoryIds, $primaryCategoryId);
-        
+
         $this->logger->info('Categories assigned successfully', [
-            'user_id' => $userId->toString()
+            'user_id' => $userId->toString(),
         ]);
     }
 }

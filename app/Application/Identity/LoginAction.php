@@ -25,23 +25,23 @@ readonly class LoginAction
     public function __invoke(LoginActionValuesInterface $request): AuthOutputDTO
     {
         $email = $request->email();
-        
+
         try {
             $this->logger->info('Login attempt started', ['email' => $email]);
-            
+
             // 認証試行
             $this->authSessionManager->attempt(
                 $email,
                 $request->password(),
                 $request->remember()
             );
-            
+
             // 認証済みユーザー取得
             $eloquentUser = $this->authSessionManager->user();
-            
+
             // アクティブ状態確認
             $this->authSessionManager->assertActive($eloquentUser);
-            
+
             // トークン生成
             [$token, $expiresAt] = $this->authSessionManager->generateToken($eloquentUser);
 
@@ -53,29 +53,29 @@ readonly class LoginAction
                 $this->logger->error('Domain user not found after successful authentication', [
                     'email' => $email,
                     'eloquent_user_id' => $eloquentUser->id,
-                    'user_ulid' => $eloquentUser->ulid
+                    'user_ulid' => $eloquentUser->id,
                 ]);
                 throw new RuntimeException('Domain user not found for authenticated user.');
             }
 
             $this->logger->info('Login successful', [
                 'user_id' => $domainUser->id->toString(),
-                'email' => $email
+                'email' => $email,
             ]);
 
             return AuthOutputDTO::create($domainUser, $token, $expiresAt);
-            
+
         } catch (ValidationException $e) {
             $this->logger->warning('Login failed - validation error', [
                 'email' => $email,
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ]);
             throw $e;
         } catch (Exception $e) {
             $this->logger->error('Login failed - unexpected error', [
                 'email' => $email,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }

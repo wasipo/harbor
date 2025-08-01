@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Identity;
 
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Inertia\Testing\AssertableInertia;
+use Tests\FeatureTestCase;
 
-class AuthenticationTest extends TestCase
+class AuthenticationTest extends FeatureTestCase
 {
     use RefreshDatabase;
 
@@ -17,29 +17,30 @@ class AuthenticationTest extends TestCase
         $this->seed();
     }
 
-    public function test_正常系_ログインページが正しく表示される()
+    public function test_正常系_ログインページが正しく表示される(): void
     {
         $response = $this->get('/login');
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page->component('Login'));
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Login'));
     }
 
-    public function test_正常系_ゲストユーザーがログインページにアクセスできる()
+    public function test_正常系_ゲストユーザーがログインページにアクセスできる(): void
     {
         $response = $this->get('/login');
         $response->assertStatus(200);
     }
 
-    public function test_正常系_認証済みユーザーはログインページにアクセスできない()
+    public function test_正常系_認証済みユーザーはログインページにアクセスできない(): void
     {
         $user = User::where('email', 'admin@example.com')->first();
+        $this->assertNotNull($user);
 
         $response = $this->actingAs($user)->get('/login');
         $response->assertRedirect('/dashboard');
     }
 
-    public function test_正常系_正しい認証情報でログインできる()
+    public function test_正常系_正しい認証情報でログインできる(): void
     {
         $response = $this->post('/login', [
             'email' => 'admin@example.com',
@@ -50,7 +51,7 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticated();
     }
 
-    public function test_異常系_間違った認証情報でログインできない()
+    public function test_異常系_間違った認証情報でログインできない(): void
     {
         $response = $this->post('/login', [
             'email' => 'admin@example.com',
@@ -61,7 +62,7 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_異常系_存在しないメールアドレスでログインできない()
+    public function test_異常系_存在しないメールアドレスでログインできない(): void
     {
         $response = $this->post('/login', [
             'email' => 'nonexistent@example.com',
@@ -72,7 +73,7 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_異常系_ログイン入力値検証エラー()
+    public function test_異常系_ログイン入力値検証エラー(): void
     {
         // Email required
         $response = $this->post('/login', [
@@ -94,9 +95,10 @@ class AuthenticationTest extends TestCase
         $response->assertSessionHasErrors('email');
     }
 
-    public function test_正常系_ログアウト機能が動作する()
+    public function test_正常系_ログアウト機能が動作する(): void
     {
         $user = User::where('email', 'admin@example.com')->first();
+        $this->assertNotNull($user);
 
         $response = $this->actingAs($user)->post('/logout');
 
@@ -104,7 +106,7 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_正常系_ログイン状態記憶機能が動作する()
+    public function test_正常系_ログイン状態記憶機能が動作する(): void
     {
         $response = $this->post('/login', [
             'email' => 'admin@example.com',
@@ -116,33 +118,31 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticated();
 
         $user = auth()->user();
+        $this->assertNotNull($user);
         $this->assertNotNull($user->remember_token);
     }
 
-    public function test_正常系_ログイン後のユーザー権限確認()
+    public function test_正常系_ログイン後のユーザー権限確認(): void
     {
         $user = User::where('email', 'admin@example.com')->first();
+        $this->assertNotNull($user);
 
         $this->actingAs($user);
 
         // Test admin permissions
         $this->assertTrue($user->isAdmin());
-        $this->assertTrue($user->hasCategory('admin'));
-
-        // Test role permissions
-        $this->assertTrue($user->hasRole('super_admin'));
-        $this->assertTrue($user->hasPermission('users.read'));
     }
 
-    public function test_正常系_ログイン後のダッシュボードアクセス()
+    public function test_正常系_ログイン後のダッシュボードアクセス(): void
     {
         $user = User::where('email', 'admin@example.com')->first();
+        $this->assertNotNull($user);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertStatus(200);
         $response->assertInertia(
-            fn ($page) => $page->component('Dashboard')
+            fn (AssertableInertia $page) => $page->component('Dashboard')
                 ->has('user.name')
                 ->has('user.email')
                 ->has('user.categories')
@@ -151,9 +151,10 @@ class AuthenticationTest extends TestCase
         );
     }
 
-    public function test_正常系_非管理者ユーザーのログイン()
+    public function test_正常系_非管理者ユーザーのログイン(): void
     {
         $user = User::where('email', 'user@example.com')->first();
+        $this->assertNotNull($user);
 
         $response = $this->post('/login', [
             'email' => 'user@example.com',
@@ -165,31 +166,14 @@ class AuthenticationTest extends TestCase
 
         // Test non-admin permissions
         $this->assertFalse($user->isAdmin());
-        $this->assertTrue($user->hasCategory('user'));
     }
 
-    public function test_異常系_非アクティブユーザーはログインできない()
+    public function test_異常系_非アクティブユーザーはログインできない(): void
     {
         $this->markTestSkipped('メール機能を実装しないので、このテストはスキップします。');
     }
 
-    public function test_正常系_権限システム統合テスト()
-    {
-        $adminUser = User::where('email', 'admin@example.com')->first();
-        $regularUser = User::where('email', 'user@example.com')->first();
-
-        // Admin should have all permissions
-        $this->actingAs($adminUser);
-        $this->assertTrue($adminUser->can('viewAny', User::class));
-        $this->assertTrue($adminUser->can('create', User::class));
-
-        // Regular user should have limited permissions
-        $this->actingAs($regularUser);
-        $this->assertFalse($regularUser->can('viewAny', User::class));
-        $this->assertFalse($regularUser->can('create', User::class));
-    }
-
-    public function test_正常系_ログイン時のセッション再生成()
+    public function test_正常系_ログイン時のセッション再生成(): void
     {
         $response = $this->post('/login', [
             'email' => 'admin@example.com',

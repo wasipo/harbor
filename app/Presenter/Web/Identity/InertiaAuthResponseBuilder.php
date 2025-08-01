@@ -27,10 +27,10 @@ class InertiaAuthResponseBuilder implements WebAuthResponseBuilderInterface
     {
         // ウェルカムメッセージをフラッシュ
         session()->flash('success', "Welcome back, {$dto->user->name}!");
-        
+
         // 権限に応じたリダイレクト先を決定
         $redirectPath = $this->determineRedirectPath($dto->user);
-        
+
         return redirect()->intended($redirectPath);
     }
 
@@ -41,7 +41,7 @@ class InertiaAuthResponseBuilder implements WebAuthResponseBuilderInterface
     {
         // ログアウトメッセージをフラッシュ
         session()->flash('info', 'You have been logged out successfully.');
-        
+
         return redirect('/');
     }
 
@@ -55,7 +55,7 @@ class InertiaAuthResponseBuilder implements WebAuthResponseBuilderInterface
         // if (in_array('admin', $user->roleIds)) {
         //     return route('admin.dashboard');
         // }
-        
+
         return route('dashboard');
     }
 }

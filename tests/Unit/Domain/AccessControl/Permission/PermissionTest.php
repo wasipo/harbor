@@ -8,9 +8,9 @@ use App\Domain\AccessControl\Permission\Permission;
 use App\Domain\AccessControl\Permission\PermissionId;
 use App\Domain\AccessControl\Permission\PermissionKey;
 use App\Domain\AccessControl\Permission\PermissionName;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
-class PermissionTest extends TestCase
+class PermissionTest extends UnitTestCase
 {
     public function test_正常系_新規作成(): void
     {
@@ -47,11 +47,11 @@ class PermissionTest extends TestCase
         $this->assertNull($permission->description);
     }
 
-    public function test_正常系_既存IDから作成(): void
+    public function test_正常系_既存_i_dから作成(): void
     {
         // Arrange
         $id = PermissionId::create();
-        
+
         // Act
         $permission = Permission::reconstitute(
             id: $id,

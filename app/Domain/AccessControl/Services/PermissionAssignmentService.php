@@ -13,7 +13,7 @@ use App\Models\UserCategory as EloquentUserCategory;
 
 /**
  * Permission Assignment Service
- * 
+ *
  * 権限割り当ての管理を行うドメインサービス
  */
 class PermissionAssignmentService
@@ -24,11 +24,11 @@ class PermissionAssignmentService
     public function syncRolePermissions(Role $role, PermissionCollection $permissions): void
     {
         $eloquentRole = EloquentRole::where('ulid', $role->id->toString())->firstOrFail();
-        
+
         // PermissionCollectionからULID配列を取得してEloquentのIDを一括取得
         $ulids = $permissions->toIds()->toStringArray();
         $permissionIds = Permission::whereIn('ulid', $ulids)->pluck('id')->all();
-        
+
         // sync メソッドで権限を同期
         $eloquentRole->permissions()->sync($permissionIds);
     }
@@ -39,11 +39,15 @@ class PermissionAssignmentService
     public function syncCategoryPermissions(UserCategory $category, PermissionCollection $permissions): void
     {
         $eloquentCategory = EloquentUserCategory::find($category->id);
-        
+
+        if ($eloquentCategory === null) {
+            return; // todo: logに出したい
+        }
+
         // PermissionCollectionからULID配列を取得してEloquentのIDを一括取得
         $ulids = $permissions->toIds()->toStringArray();
         $permissionIds = Permission::whereIn('ulid', $ulids)->pluck('id')->all();
-        
+
         // sync メソッドで権限を同期
         $eloquentCategory->permissions()->sync($permissionIds);
     }

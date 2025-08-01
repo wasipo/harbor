@@ -13,12 +13,12 @@ enum CollectionBehavior: string
      * 重複したらエラー
      */
     case STRICT_NO_DUPLICATES = 'strict';
-    
+
     /**
      * 重複を静かに除去
      */
     case UNIQUE_SILENT = 'unique_silent';
-    
+
     /**
      * 重複OK
      */

@@ -9,7 +9,7 @@ use App\Adapter\Identity\AuthOutputDTO;
 class JsonAuthResponseBuilder implements AuthResponseBuilderInterface
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function build(AuthOutputDTO $dto): array
     {

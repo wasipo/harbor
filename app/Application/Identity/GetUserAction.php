@@ -3,6 +3,7 @@
 namespace App\Application\Identity;
 
 use App\Adapter\Identity\UserOutputDTO;
+use App\Domain\Identity\UserId;
 use App\Domain\Identity\UserRepositoryInterface;
 
 readonly class GetUserAction
@@ -11,8 +12,9 @@ readonly class GetUserAction
         private UserRepositoryInterface $userRepository
     ) {}
 
-    public function __invoke(int $userId): UserOutputDTO
+    public function __invoke(string $userId): UserOutputDTO
     {
+        $userId = UserId::fromString($userId);
         $user = $this->userRepository->findById($userId);
 
         if (!$user) {

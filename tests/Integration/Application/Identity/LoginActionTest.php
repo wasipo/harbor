@@ -2,15 +2,15 @@
 
 namespace Tests\Integration\Application\Identity;
 
-use App\Application\Identity\LoginAction;
 use App\Adapter\Identity\AuthOutputDTO;
+use App\Application\Identity\LoginAction;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User as EloquentUser;
-use App\Application\Identity\LoginActionValuesInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
-use Tests\TestCase;
+use Tests\UnitTestCase;
 
-class LoginActionTest extends TestCase
+class LoginActionTest extends UnitTestCase
 {
     use RefreshDatabase;
 
@@ -22,43 +22,35 @@ class LoginActionTest extends TestCase
         $this->action = app(LoginAction::class);
     }
 
-    public function test_正常系_ログイン成功()
+    /**
+     * Create a mock LoginRequest with given data
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function createLoginRequest(array $data): LoginRequest
+    {
+        $request = LoginRequest::create('/', 'POST', $data);
+        $request->setContainer($this->app);
+        $request->validateResolved();
+
+        return $request;
+    }
+
+    public function test_正常系_ログイン成功(): void
     {
         // Arrange
         EloquentUser::factory()->create([
-            'ulid' => '01HZKT234567890ABCDEFGHIJK',
+            'id' => '01HZKT234567890ABCDEFGHIJK',
             'email' => 'test@example.com',
             'password' => bcrypt('password123'),
             'is_active' => true,
         ]);
 
-        $request = new class implements LoginActionValuesInterface
-        {
-            public function email(): string
-            {
-                return 'test@example.com';
-            }
-
-            public function password(): string
-            {
-                return 'password123';
-            }
-
-            public function remember(): bool
-            {
-                return false;
-            }
-
-            public function xsrf(): ?string
-            {
-                return null;
-            }
-
-            public function idempotencyKey(): ?string
-            {
-                return null;
-            }
-        };
+        $request = $this->createLoginRequest([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'remember' => false,
+        ]);
 
         // Act
         $result = ($this->action)($request);
@@ -66,11 +58,11 @@ class LoginActionTest extends TestCase
         // Assert
         $this->assertInstanceOf(AuthOutputDTO::class, $result);
         $this->assertNotEmpty($result->token);
-        $this->assertNotNull($result->expires_at);
+        $this->assertInstanceOf(\DateTimeInterface::class, $result->expires_at);
         $this->assertEquals('test@example.com', $result->user->email);
     }
 
-    public function test_異常系_認証失敗_無効なパスワード()
+    public function test_異常系_認証失敗_無効なパスワード(): void
     {
         // Arrange
         EloquentUser::factory()->create([
@@ -79,76 +71,32 @@ class LoginActionTest extends TestCase
             'is_active' => true,
         ]);
 
-        $request = new class implements LoginActionValuesInterface
-        {
-            public function email(): string
-            {
-                return 'test@example.com';
-            }
-
-            public function password(): string
-            {
-                return 'wrong_password';
-            }
-
-            public function remember(): bool
-            {
-                return false;
-            }
-
-            public function xsrf(): ?string
-            {
-                return null;
-            }
-
-            public function idempotencyKey(): ?string
-            {
-                return null;
-            }
-        };
+        $request = $this->createLoginRequest([
+            'email' => 'test@example.com',
+            'password' => 'wrong_password',
+            'remember' => false,
+        ]);
 
         // Act & Assert
         $this->expectException(ValidationException::class);
         ($this->action)($request);
     }
 
-    public function test_異常系_認証失敗_存在しないメール()
+    public function test_異常系_認証失敗_存在しないメール(): void
     {
         // Arrange
-        $request = new class implements LoginActionValuesInterface
-        {
-            public function email(): string
-            {
-                return 'nonexistent@example.com';
-            }
-
-            public function password(): string
-            {
-                return 'password123';
-            }
-
-            public function remember(): bool
-            {
-                return false;
-            }
-
-            public function xsrf(): ?string
-            {
-                return null;
-            }
-
-            public function idempotencyKey(): ?string
-            {
-                return null;
-            }
-        };
+        $request = $this->createLoginRequest([
+            'email' => 'nonexistent@example.com',
+            'password' => 'password123',
+            'remember' => false,
+        ]);
 
         // Act & Assert
         $this->expectException(ValidationException::class);
         ($this->action)($request);
     }
 
-    public function test_異常系_非アクティブユーザー()
+    public function test_異常系_非アクティブユーザー(): void
     {
         // Arrange
         EloquentUser::factory()->create([
@@ -157,40 +105,18 @@ class LoginActionTest extends TestCase
             'is_active' => false, // 非アクティブ
         ]);
 
-        $request = new class implements LoginActionValuesInterface
-        {
-            public function email(): string
-            {
-                return 'inactive@example.com';
-            }
-
-            public function password(): string
-            {
-                return 'password123';
-            }
-
-            public function remember(): bool
-            {
-                return false;
-            }
-
-            public function xsrf(): ?string
-            {
-                return null;
-            }
-
-            public function idempotencyKey(): ?string
-            {
-                return null;
-            }
-        };
+        $request = $this->createLoginRequest([
+            'email' => 'inactive@example.com',
+            'password' => 'password123',
+            'remember' => false,
+        ]);
 
         // Act & Assert
         $this->expectException(ValidationException::class);
         ($this->action)($request);
     }
 
-    public function test_正常系_remember機能()
+    public function test_正常系_remember機能(): void
     {
         // Arrange
         EloquentUser::factory()->create([
@@ -199,33 +125,11 @@ class LoginActionTest extends TestCase
             'is_active' => true,
         ]);
 
-        $request = new class implements LoginActionValuesInterface
-        {
-            public function email(): string
-            {
-                return 'remember@example.com';
-            }
-
-            public function password(): string
-            {
-                return 'password123';
-            }
-
-            public function remember(): bool
-            {
-                return true;
-            }
-
-            public function xsrf(): ?string
-            {
-                return null;
-            }
-
-            public function idempotencyKey(): ?string
-            {
-                return null;
-            }
-        };
+        $request = $this->createLoginRequest([
+            'email' => 'remember@example.com',
+            'password' => 'password123',
+            'remember' => true,
+        ]);
 
         // Act
         $result = ($this->action)($request);

@@ -5,7 +5,6 @@ namespace App\Domain\AccessControl\Category;
 use App\Domain\AccessControl\Permission\PermissionId;
 use App\Domain\AccessControl\Permission\PermissionIdCollection;
 use App\Models\UserCategory as EloquentUserCategory;
-use DateTimeImmutable;
 use Exception;
 
 class UserCategoryFactory
@@ -28,7 +27,7 @@ class UserCategoryFactory
             name: $eloquentCategory->name,
             description: $eloquentCategory->description,
             isActive: $eloquentCategory->is_active,
-            permissionIds: new PermissionIdCollection($permissionIds)
+            permissionIds: new PermissionIdCollection(array_values($permissionIds))
         );
     }
 
@@ -41,13 +40,14 @@ class UserCategoryFactory
      *     name: string,
      *     description: string|null,
      *     is_active: bool,
-     *     permission_ids?: array<string>
+     *     permission_ids?: list<string>
      * } $data
+     *
      * @throws Exception
      */
     public static function fromArray(array $data): UserCategory
     {
-        $permissionIds = isset($data['permission_ids']) 
+        $permissionIds = isset($data['permission_ids'])
             ? PermissionIdCollection::fromStrings($data['permission_ids'])
             : PermissionIdCollection::empty();
 

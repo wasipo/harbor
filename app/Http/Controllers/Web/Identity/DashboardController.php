@@ -19,7 +19,7 @@ final readonly class DashboardController
     public function __invoke(): Response
     {
         $data = $this->queryService->getDashboardData();
-        
+
         return Inertia::render('Dashboard', $this->presenter->present($data));
     }
 }

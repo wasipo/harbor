@@ -11,9 +11,9 @@ use App\Adapter\AccessControl\Role\RoleDataDTO;
 final readonly class DashboardDataDTO
 {
     /**
-     * @param array<CategoryDataDTO> $categories
-     * @param array<RoleDataDTO> $roles
-     * @param array<PermissionDataDTO> $permissions
+     * @param  array<CategoryDataDTO>  $categories
+     * @param  array<RoleDataDTO>  $roles
+     * @param  array<PermissionDataDTO>  $permissions
      */
     public function __construct(
         public string $id,

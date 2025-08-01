@@ -25,7 +25,7 @@ Route::middleware('guest')->group(function () {
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     Route::post('/logout', LogoutController::class)->name('logout');
-    
+
     // Dashboard route
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 });

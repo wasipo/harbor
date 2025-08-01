@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\PermissionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -17,20 +18,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property \Carbon\CarbonImmutable $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Role> $roles
  * @property-read \Illuminate\Database\Eloquent\Collection<int, UserCategory> $categories
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Permission whereIn($column, $values, $boolean = 'and', $not = false)
  * @method static \Illuminate\Database\Eloquent\Builder|Permission where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static Permission|null find($id, $columns = ['*'])
- * @method static Permission create(array $attributes = [])
  */
 class Permission extends Model
 {
+    /** @use HasFactory<PermissionFactory> */
     use HasFactory;
 
     /**
      * キータイプをstringに設定（ULID使用）
      */
     protected $keyType = 'string';
-    
+
     /**
      * 自動増分を無効化（ULID使用）
      */
@@ -59,6 +61,9 @@ class Permission extends Model
     }
 
     // Relationships
+    /**
+     * @return BelongsToMany<Role, $this>
+     */
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -69,6 +74,9 @@ class Permission extends Model
         )->withTimestamps();
     }
 
+    /**
+     * @return BelongsToMany<UserCategory, $this>
+     */
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(

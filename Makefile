@@ -94,6 +94,14 @@ seed:
 fresh:
 	docker-compose exec php php artisan migrate:fresh --seed
 
+master:
+	docker-compose exec php php artisan db:seed-master
+	@echo "✅ マスターデータ投入完了"
+
+master-fresh:
+	docker-compose exec php php artisan db:seed-master --fresh
+	@echo "✅ データベースリフレッシュ & マスターデータ投入完了"
+
 # Cache commands
 clear:
 	docker-compose exec php php artisan optimize:clear

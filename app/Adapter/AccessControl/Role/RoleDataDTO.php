@@ -7,7 +7,7 @@ namespace App\Adapter\AccessControl\Role;
 final readonly class RoleDataDTO
 {
     /**
-     * @param array<string> $permissionKeys
+     * @param  array<string>  $permissionKeys
      */
     public function __construct(
         public string $id,

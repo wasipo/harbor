@@ -45,7 +45,7 @@ class CategoryPermissionSeeder extends Seeder
             if ($category) {
                 // 権限キーからPermissionのIDを取得
                 $permissionIds = Permission::whereIn('key', $permissionKeys)->pluck('id');
-                
+
                 // カテゴリーに権限を関連付け
                 $category->permissions()->sync($permissionIds);
             }

@@ -7,11 +7,11 @@ namespace Tests\Unit\Domain\AccessControl\Category;
 use App\Domain\AccessControl\Category\CategoryIdCollection;
 use App\Domain\AccessControl\Category\UserCategoryId;
 use DomainException;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
-class CategoryIdCollectionTest extends TestCase
+class CategoryIdCollectionTest extends UnitTestCase
 {
-    public function test_正常系_空コレクション生成()
+    public function test_正常系_空コレクション生成(): void
     {
         // Arrange & Act
         $collection = CategoryIdCollection::empty();
@@ -21,7 +21,7 @@ class CategoryIdCollectionTest extends TestCase
         $this->assertCount(0, $collection);
     }
 
-    public function test_正常系_可変長ファクトリで_collection生成()
+    public function test_正常系_可変長ファクトリで_collection生成(): void
     {
         // Arrange
         $id1 = UserCategoryId::create();
@@ -37,7 +37,7 @@ class CategoryIdCollectionTest extends TestCase
         $this->assertTrue($collection->contains($id2));
     }
 
-    public function test_正常系_文字列配列から_collection生成()
+    public function test_正常系_文字列配列から_collection生成(): void
     {
         // Arrange
         $strings = ['01ARZ3NDEKTSV4RRFFQ69G5FAV', '01ARZ3NDEKTSV4RRFFQ69G5FAW'];
@@ -50,7 +50,7 @@ class CategoryIdCollectionTest extends TestCase
         $this->assertContainsOnlyInstancesOf(UserCategoryId::class, $collection->all());
     }
 
-    public function test_正常系_includingメソッドで_i_d追加()
+    public function test_正常系_includingメソッドで_i_d追加(): void
     {
         // Arrange
         $id1 = UserCategoryId::create();
@@ -67,7 +67,7 @@ class CategoryIdCollectionTest extends TestCase
         $this->assertTrue($newCollection->contains($id2));
     }
 
-    public function test_正常系_複数_i_d同時追加()
+    public function test_正常系_複数_i_d同時追加(): void
     {
         // Arrange
         $id1 = UserCategoryId::create();
@@ -85,7 +85,7 @@ class CategoryIdCollectionTest extends TestCase
         $this->assertTrue($newCollection->contains($id3));
     }
 
-    public function test_正常系_空配列でincluding()
+    public function test_正常系_空配列でincluding(): void
     {
         // Arrange
         $id1 = UserCategoryId::create();
@@ -99,7 +99,7 @@ class CategoryIdCollectionTest extends TestCase
         $this->assertTrue($newCollection->contains($id1));
     }
 
-    public function test_異常系_重複_i_dで例外発生()
+    public function test_異常系_重複_i_dで例外発生(): void
     {
         // Arrange
         $id1 = UserCategoryId::create();
@@ -112,7 +112,7 @@ class CategoryIdCollectionTest extends TestCase
         new CategoryIdCollection([$id1, $id2, $id1]); // id1が重複
     }
 
-    public function test_異常系_無効な_uli_d文字列でfrom_strings()
+    public function test_異常系_無効な_uli_d文字列でfrom_strings(): void
     {
         // Arrange
         $invalidStrings = ['invalid-ulid-string'];
@@ -122,7 +122,7 @@ class CategoryIdCollectionTest extends TestCase
         CategoryIdCollection::fromStrings($invalidStrings);
     }
 
-    public function test_境界値_単一要素で_collection生成()
+    public function test_境界値_単一要素で_collection生成(): void
     {
         // Arrange
         $id = UserCategoryId::create();
@@ -135,7 +135,7 @@ class CategoryIdCollectionTest extends TestCase
         $this->assertTrue($collection->contains($id));
     }
 
-    public function test_境界値_大量データで_collection生成()
+    public function test_境界値_大量データで_collection生成(): void
     {
         // Arrange
         $ids = [];

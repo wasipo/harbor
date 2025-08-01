@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
 
 /**
  * Base class for entity collections
- * 
+ *
  * @template TEntity
  */
 abstract class AbstractEntityCollection implements Countable
@@ -28,50 +28,56 @@ abstract class AbstractEntityCollection implements Countable
     // ===========================================
     // Static Factory Methods
     // ===========================================
-    
+
     /** 空コレクション */
     public static function empty(): static
     {
         return new static;
     }
 
-    /** 
+    /**
      * 可変長ファクトリ
-     * @param TEntity ...$entities
+     *
+     * todo: 共変どうするか決まるまでStanは無視
+     *
+     * @param  TEntity  ...$entities
      */
     public static function of(...$entities): static
     {
-        /** @var list<TEntity> */
+        /** @var list<TEntity> $list */
         $list = array_values($entities);
+
+        // @phpstan-ignore-next-line
         return new static($list);
     }
 
     // ===========================================
     // Abstract Methods
     // ===========================================
-    
-    /** 
+
+    /**
      * エンティティの重複チェック用の識別子を取得
-     * @param TEntity $entity
+     *
+     * @param  TEntity  $entity
      */
     abstract protected function getIdentifier($entity): string;
 
     // ===========================================
     // Protected Methods
     // ===========================================
-    
+
     /** 追加的ビジネスルールを子で上書き */
     protected function assertInvariants(): void {}
 
-    /** 
-     * @param list<TEntity> $items 
+    /**
+     * @param  list<TEntity>  $items
      * @return list<TEntity>
      */
     private function deduplicate(array $items): array
     {
         $seen = [];
         $result = [];
-        
+
         foreach ($items as $item) {
             $identifier = $this->getIdentifier($item);
             if (isset($seen[$identifier])) {
@@ -80,14 +86,14 @@ abstract class AbstractEntityCollection implements Countable
             $seen[$identifier] = true;
             $result[] = $item;
         }
-        
+
         return $result;
     }
 
     // ===========================================
     // Public Methods
     // ===========================================
-    
+
     /**
      * 空のコレクションかどうか
      */
@@ -103,7 +109,7 @@ abstract class AbstractEntityCollection implements Countable
     {
         return !$this->isEmpty();
     }
-    
+
     /**
      * エンティティの数を返す
      */
@@ -111,9 +117,10 @@ abstract class AbstractEntityCollection implements Countable
     {
         return $this->entities->count();
     }
-    
+
     /**
      * 全要素を返す
+     *
      * @return list<TEntity>
      */
     public function all(): array
@@ -121,22 +128,25 @@ abstract class AbstractEntityCollection implements Countable
         /** @var list<TEntity> */
         return $this->entities->values()->all();
     }
-    
+
     /**
      * 指定されたエンティティを含むかチェック
-     * @param TEntity $entity
+     *
+     * @param  TEntity  $entity
      */
     public function contains($entity): bool
     {
         $identifier = $this->getIdentifier($entity);
+
         return $this->entities->contains(
             fn ($item) => $this->getIdentifier($item) === $identifier
         );
     }
-    
+
     /**
      * 各要素に対して処理を実行
-     * @param callable(TEntity): void $callback
+     *
+     * @param  callable(TEntity): void  $callback
      */
     public function each(callable $callback): void
     {

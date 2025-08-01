@@ -6,7 +6,7 @@ namespace Tests\Unit\Domain\Shared\Collections;
 
 use App\Domain\Shared\Collections\AbstractEntityCollection;
 use DomainException;
-use PHPUnit\Framework\TestCase;
+use Tests\UnitTestCase;
 
 // テスト用のエンティティ
 class TestEntity
@@ -18,15 +18,21 @@ class TestEntity
 }
 
 // テスト用のコレクション
+/**
+ * @extends AbstractEntityCollection<TestEntity>
+ */
 class TestEntityCollection extends AbstractEntityCollection
 {
+    /**
+     * @param  TestEntity  $entity
+     */
     protected function getIdentifier($entity): string
     {
         return $entity->id;
     }
 }
 
-class AbstractEntityCollectionTest extends TestCase
+class AbstractEntityCollectionTest extends UnitTestCase
 {
     public function test_正常系_空コレクション生成(): void
     {
@@ -60,7 +66,7 @@ class AbstractEntityCollectionTest extends TestCase
         $entities = [
             new TestEntity('1', 'Entity 1'),
             new TestEntity('2', 'Entity 2'),
-            new TestEntity('3', 'Entity 3')
+            new TestEntity('3', 'Entity 3'),
         ];
 
         // Act

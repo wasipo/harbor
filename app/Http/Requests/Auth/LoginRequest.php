@@ -4,7 +4,6 @@ namespace App\Http\Requests\Auth;
 
 use App\Application\Identity\LoginActionValuesInterface;
 use App\Http\Traits\HasCommonHeaders;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest implements LoginActionValuesInterface
@@ -20,7 +19,7 @@ class LoginRequest extends FormRequest implements LoginActionValuesInterface
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, array<int, string>>
      */
     public function rules(): array
     {
@@ -50,11 +49,13 @@ class LoginRequest extends FormRequest implements LoginActionValuesInterface
     // LoginActionValuesInterface implementation
     public function email(): string
     {
+        /** @var string */
         return $this->validated('email');
     }
 
     public function password(): string
     {
+        /** @var string */
         return $this->validated('password');
     }
 

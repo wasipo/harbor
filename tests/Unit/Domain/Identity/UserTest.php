@@ -14,10 +14,10 @@ use App\Domain\Identity\Name;
 use App\Domain\Identity\User;
 use App\Domain\Identity\UserId;
 use Carbon\CarbonImmutable;
-use PHPUnit\Framework\TestCase;
 use Tests\Factories\Domain\Identity\TestUserFactory;
+use Tests\UnitTestCase;
 
-class UserTest extends TestCase
+class UserTest extends UnitTestCase
 {
     private function createTestUser(): User
     {
@@ -38,7 +38,7 @@ class UserTest extends TestCase
         );
     }
 
-    public function test_正常系_user生成()
+    public function test_正常系_user生成(): void
     {
         // Arrange
         $id = UserId::create();
@@ -68,7 +68,7 @@ class UserTest extends TestCase
         $this->assertSame($roleIds, $user->roleIds);
     }
 
-    public function test_正常系_activate動作()
+    public function test_正常系_activate動作(): void
     {
         // Arrange
         $user = $this->createTestUser()->deactivate();
@@ -82,7 +82,7 @@ class UserTest extends TestCase
         $this->assertSame(AccountStatus::ACTIVE, $activatedUser->status);
     }
 
-    public function test_正常系_deactivate動作()
+    public function test_正常系_deactivate動作(): void
     {
         // Arrange
         $user = $this->createTestUser();
@@ -96,7 +96,7 @@ class UserTest extends TestCase
         $this->assertSame(AccountStatus::INACTIVE, $deactivatedUser->status);
     }
 
-    public function test_正常系_suspend動作()
+    public function test_正常系_suspend動作(): void
     {
         // Arrange
         $user = $this->createTestUser();
@@ -110,7 +110,7 @@ class UserTest extends TestCase
         $this->assertSame(AccountStatus::SUSPENDED, $suspendedUser->status);
     }
 
-    public function test_正常系_change_name動作()
+    public function test_正常系_change_name動作(): void
     {
         // Arrange
         $user = $this->createTestUser();
@@ -124,7 +124,7 @@ class UserTest extends TestCase
         $this->assertEquals('Test User', $user->name->value); // 元のオブジェクトは変更されない
     }
 
-    public function test_正常系_change_email動作()
+    public function test_正常系_change_email動作(): void
     {
         // Arrange
         $user = $this->createTestUser();
@@ -138,7 +138,7 @@ class UserTest extends TestCase
         $this->assertEquals('test@example.com', $user->email->value); // 元のオブジェクトは変更されない
     }
 
-    public function test_正常系_assign_category動作()
+    public function test_正常系_assign_category動作(): void
     {
         // Arrange
         $user = $this->createTestUser();
@@ -153,7 +153,7 @@ class UserTest extends TestCase
         $this->assertTrue($updatedUser->categoryIds->contains($newCategoryId));
     }
 
-    public function test_正常系_assign_role動作()
+    public function test_正常系_assign_role動作(): void
     {
         // Arrange
         $user = $this->createTestUser();
@@ -168,7 +168,7 @@ class UserTest extends TestCase
         $this->assertTrue($updatedUser->roleIds->contains($newRoleId));
     }
 
-    public function test_正常系_can_login判定()
+    public function test_正常系_can_login判定(): void
     {
         // Arrange
         $activeUser = $this->createTestUser();
@@ -181,7 +181,7 @@ class UserTest extends TestCase
         $this->assertFalse($suspendedUser->canLogin());
     }
 
-    public function test_正常系_is_active判定()
+    public function test_正常系_is_active判定(): void
     {
         // Arrange
         $activeUser = $this->createTestUser();
@@ -194,7 +194,7 @@ class UserTest extends TestCase
         $this->assertFalse($suspendedUser->isActive());
     }
 
-    public function test_正常系_equals比較()
+    public function test_正常系_equals比較(): void
     {
         // Arrange
         $userId = UserId::fromString('01K06EWBM2JK3M31SE7NWJ50GW');
@@ -222,7 +222,7 @@ class UserTest extends TestCase
         $this->assertFalse($user1->equals($user3)); // 異なるID
     }
 
-    public function test_正常系_イミュータブル性確認()
+    public function test_正常系_イミュータブル性確認(): void
     {
         // Arrange
         $originalUser = $this->createTestUser();
@@ -252,7 +252,7 @@ class UserTest extends TestCase
         $this->assertCount(3, $modifiedUser->roleIds);
     }
 
-    public function test_境界値_空_category_id_collectionで_user生成()
+    public function test_境界値_空_category_id_collectionで_user生成(): void
     {
         // Arrange
         $user = User::reconstitute(
@@ -269,7 +269,7 @@ class UserTest extends TestCase
         $this->assertTrue($user->roleIds->isEmpty());
     }
 
-    public function test_境界値_大量_category_idで_user生成()
+    public function test_境界値_大量_category_idで_user生成(): void
     {
         // Arrange
         $categoryIds = [];
