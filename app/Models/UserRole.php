@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+/**
+ * @property int $user_id
+ * @property int $role_id
+ * @property \Carbon\CarbonImmutable $assigned_at
+ * @property int|null $assigned_by
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property-read User $user
+ * @property-read Role $role
+ * @property-read User|null $assignedByUser
+ * @method static bool insert(array $values)
+ * @method static bool fillAndInsert(array $rows)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserRole where($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static UserRole create(array $attributes = [])
+ */
+class UserRole extends Model
+{
+    public $timestamps = true;
+
+    protected $fillable = [
+        'user_id',
+        'role_id',
+        'assigned_at',
+        'assigned_by',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'assigned_at' => 'datetime',
+        ];
+    }
+
+    // Domain behaviors
+    public function isActive(): bool
+    {
+        return true; // For now, all role assignments are active
+    }
+
+    public function getAssignedByUserId(): ?int
+    {
+        return $this->assigned_by;
+    }
+
+    // Relationships
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function assignedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_by');
+    }
+}

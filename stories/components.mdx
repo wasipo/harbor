@@ -1,0 +1,53 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Button } from '../resources/js/shared/components/ui/Button'
+
+<Meta title="Harbor/Components/Overview" />
+
+# Harbor コンポーネント仕様
+
+React Aria Components + Tailwind CSSで構築されたHarborのUIコンポーネントライブラリ。
+
+## 🎯 設計原則
+
+- **アクセシビリティファースト**: React Aria Componentsベース
+- **一貫性**: 統一されたデザインシステム
+- **再利用性**: 汎用的なコンポーネント設計
+- **型安全性**: TypeScriptで完全な型定義
+
+---
+
+## 🔘 Button コンポーネント
+
+プライマリ、セカンダリ、デンジャーの3つのバリエーションを提供。
+
+### 実装済みのコンポーネント
+
+- ✅ Button - 各種アクションボタン
+- 🚧 Input - テキスト入力（実装予定）
+- 🚧 Badge - ステータス表示（実装予定）
+- 🚧 Select - ドロップダウン選択（実装予定）
+- 🚧 DatePicker - 日付選択（実装予定）
+
+### 使用例
+
+```tsx
+import { Button } from '@/shared/components/ui/Button'
+
+// 基本的な使用方法
+<Button variant="primary">保存</Button>
+<Button variant="secondary">キャンセル</Button>
+<Button variant="danger">削除</Button>
+
+// サイズバリエーション
+<Button size="sm">小</Button>
+<Button size="md">中</Button>
+<Button size="lg">大</Button>
+
+// 無効化状態
+<Button isDisabled>無効</Button>
+
+// ローディング状態
+<Button isLoading>処理中...</Button>
+```
+
+詳細な使用方法は各コンポーネントのStoriesを参照してください。

@@ -1,0 +1,22 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - config
+        - database
+        - routes
+        - tests
+
+    level: max
+
+    ignoreErrors:
+        - '#PHPDoc tag @var#'
+
+    excludePaths:
+        # 生成ファイル
+        - storage/framework/views/*.php
+        
+        # マイグレーションファイル
+        - database/migrations/*.php

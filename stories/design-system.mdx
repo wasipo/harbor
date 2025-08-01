@@ -1,0 +1,252 @@
+# Harbor Design System
+
+勤怠管理SaaSのための統一デザインシステム。React Aria Components + Tailwind CSSで構築。
+
+## 🎨 デザイントークン
+
+### カラーパレット
+
+```css
+/* Primary Colors - ブランドカラー */
+--color-primary-50: #eff6ff;
+--color-primary-500: #3b82f6;
+--color-primary-600: #2563eb;
+--color-primary-700: #1d4ed8;
+
+/* Semantic Colors - 機能的カラー */
+--color-success: #10b981;  /* 承認済み */
+--color-warning: #f59e0b;  /* 承認待ち */
+--color-error: #ef4444;    /* エラー・拒否 */
+--color-info: #06b6d4;     /* 情報 */
+
+/* Neutral Colors - グレースケール */
+--color-gray-50: #f9fafb;
+--color-gray-100: #f3f4f6;
+--color-gray-500: #6b7280;
+--color-gray-900: #111827;
+```
+
+### タイポグラフィ
+
+```css
+/* フォントファミリー */
+--font-sans: 'Inter', 'Noto Sans JP', sans-serif;
+
+/* フォントサイズ */
+--text-xs: 0.75rem;    /* 12px - ヘルプテキスト */
+--text-sm: 0.875rem;   /* 14px - キャプション */
+--text-base: 1rem;     /* 16px - 本文 */
+--text-lg: 1.125rem;   /* 18px - サブタイトル */
+--text-xl: 1.25rem;    /* 20px - タイトル */
+--text-2xl: 1.5rem;    /* 24px - ページタイトル */
+
+/* 行間 */
+--leading-tight: 1.25;
+--leading-normal: 1.5;
+--leading-relaxed: 1.625;
+```
+
+### スペーシング
+
+```css
+/* Spacing Scale - 8px base */
+--space-1: 0.25rem;  /* 4px */
+--space-2: 0.5rem;   /* 8px */
+--space-3: 0.75rem;  /* 12px */
+--space-4: 1rem;     /* 16px */
+--space-6: 1.5rem;   /* 24px */
+--space-8: 2rem;     /* 32px */
+--space-12: 3rem;    /* 48px */
+--space-16: 4rem;    /* 64px */
+```
+
+## 🧩 基本コンポーネント
+
+### Button
+
+```tsx
+// Primary Button - 主要アクション
+<Button variant="primary" size="md">
+  勤怠登録
+</Button>
+
+// Secondary Button - 副次アクション
+<Button variant="secondary" size="md">
+  キャンセル
+</Button>
+
+// Danger Button - 削除などの危険なアクション
+<Button variant="danger" size="md">
+  削除
+</Button>
+```
+
+### Input
+
+```tsx
+// Text Input
+<Input
+  label="従業員名"
+  placeholder="山田太郎"
+  required
+/>
+
+// Date Input
+<DatePicker
+  label="勤務日"
+  required
+/>
+
+// Time Input
+<TimeField
+  label="開始時刻"
+  required
+/>
+```
+
+### Status Badge
+
+```tsx
+// 勤怠ステータス
+<Badge variant="draft">下書き</Badge>
+<Badge variant="submitted">提出済み</Badge>
+<Badge variant="approved">承認済み</Badge>
+<Badge variant="rejected">却下</Badge>
+```
+
+## 📱 レイアウトパターン
+
+### アプリケーションレイアウト
+
+```tsx
+<AppLayout>
+  <Header />
+  <Sidebar />
+  <main className="flex-1 p-6">
+    <PageHeader title="勤怠管理" />
+    <PageContent>
+      {/* メインコンテンツ */}
+    </PageContent>
+  </main>
+</AppLayout>
+```
+
+### カードレイアウト
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>月次勤怠サマリー</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="grid grid-cols-3 gap-4">
+      <StatCard title="総労働時間" value="160h" />
+      <StatCard title="残業時間" value="20h" />
+      <StatCard title="承認待ち" value="5件" />
+    </div>
+  </CardContent>
+</Card>
+```
+
+## 🎯 アクセシビリティガイドライン
+
+### キーボードナビゲーション
+- Tab順序の論理的な設定
+- フォーカス表示の明確化
+- ショートカットキーの提供
+
+### スクリーンリーダー対応
+- 適切なARIAラベル
+- セマンティックHTML使用
+- ランドマーク要素の活用
+
+### カラーコントラスト
+- WCAG AA準拠（4.5:1以上）
+- カラーブラインド対応
+- 重要な情報の色以外での伝達
+
+## 📐 レスポンシブデザイン
+
+### ブレークポイント
+
+```css
+/* Mobile First */
+--breakpoint-sm: 640px;   /* タブレット縦 */
+--breakpoint-md: 768px;   /* タブレット横 */
+--breakpoint-lg: 1024px;  /* デスクトップ小 */
+--breakpoint-xl: 1280px;  /* デスクトップ大 */
+```
+
+### グリッドシステム
+
+```tsx
+// モバイル: 1列、タブレット: 2列、デスクトップ: 3列
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <AttendanceCard />
+  <AttendanceCard />
+  <AttendanceCard />
+</div>
+```
+
+## 🔄 アニメーション
+
+### トランジション
+
+```css
+/* 基本トランジション */
+.transition-base {
+  transition: all 0.15s ease-in-out;
+}
+
+/* ホバーエフェクト */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+```
+
+### ローディング状態
+
+```tsx
+// スケルトンローディング
+<div className="animate-pulse">
+  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+</div>
+
+// スピナー
+<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+```
+
+## 📋 フォームパターン
+
+### バリデーション
+
+```tsx
+<FormField>
+  <Label>開始時刻</Label>
+  <TimeField 
+    isInvalid={errors.startTime}
+    errorMessage={errors.startTime?.message}
+  />
+  <FieldDescription>
+    HH:MM形式で入力してください
+  </FieldDescription>
+</FormField>
+```
+
+### フォームレイアウト
+
+```tsx
+// 2カラムフォーム
+<form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <FormField>
+    <Label>開始時刻</Label>
+    <TimeField />
+  </FormField>
+  <FormField>
+    <Label>終了時刻</Label>
+    <TimeField />
+  </FormField>
+</form>
+```

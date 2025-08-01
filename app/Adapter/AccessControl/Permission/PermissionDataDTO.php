@@ -1,0 +1,14 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Adapter\AccessControl\Permission;
+
+final readonly class PermissionDataDTO
+{
+    public function __construct(
+        public string $id,
+        public string $key,
+        public string $name,
+    ) {}
+}
