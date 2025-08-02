@@ -64,8 +64,8 @@ resources/js/
 
 ### 必要環境
 
-- Docker & Docker Compose（推奨）
-- Node.js 20 LTS（フロントエンド開発用）
+- Docker & Docker Compose
+- Node.js 20 LTS
 
 ### インストール
 
@@ -76,7 +76,6 @@ resources/js/
 git clone https://github.com/wasipo/harbor harbor
 cd harbor
 
-# フロントエンド開発サーバーの起動（別ターミナル）
 npm install
 make master-fresh
 
