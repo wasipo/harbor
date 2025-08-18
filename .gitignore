@@ -34,3 +34,8 @@ cookies.txt
 
 # nodeのLockは無視する
 package-lock.json
+
+# larabvel boost ignore
+.mcp.json
+mcp.json
+guidelines.md
