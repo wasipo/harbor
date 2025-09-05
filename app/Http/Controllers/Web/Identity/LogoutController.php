@@ -18,12 +18,16 @@ readonly class LogoutController
 
     /**
      * Log the user out
-     * @throws Exception
      */
     public function __invoke(): RedirectResponse
     {
-        // todo: テスト
-        ($this->logoutAction)();
+        try {
+            ($this->logoutAction)();
+        } catch (Exception $e) {
+            session()->flash('error', 'Failed to log out. Please try again.');
+
+            return redirect()->back();
+        }
 
         return $this->presenter->buildLogoutResponse();
     }
